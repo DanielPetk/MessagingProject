@@ -1,0 +1,27 @@
+# CMake build folders (common names)
+build*/
+out*/
+cmake-build-*/
+
+# CMake cache and generated files
+CMakeFiles/
+CMakeCache.txt
+Makefile
+cmake_install.cmake
+*.ninja
+
+# Compiled object files and binaries
+*.o
+*.obj
+*.a
+*.lib
+*.dll
+*.so
+*.exe
+*.out
+*.log
+
+# IDE-specific (CLion, Visual Studio, etc.)
+*.user
+*.vcxproj*
+.idea/
