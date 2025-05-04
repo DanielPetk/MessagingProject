@@ -144,5 +144,5 @@ void c2toc1(SOCKET c1sock, SOCKET c2sock){
             return;
         }
     }
-    
+
 }
