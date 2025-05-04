@@ -10,6 +10,7 @@
 #include <chrono>
 #include <list>
 
+
 constexpr int HOST_BUFFER_SIZE = 256;
 constexpr int SEND_RECV_BUFFER_SIZE = 4096;
 constexpr int PORT_NUMBER = 54321;
@@ -28,6 +29,7 @@ void sendLoop(SOCKET sock);
 void deleteLine(int line);
 void insertLine(int line, const std::string& text);
 std::string formatMsg(const std::string& msg, bool other);
+
 
 
 int main(){
