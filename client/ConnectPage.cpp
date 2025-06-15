@@ -6,7 +6,7 @@
 #include "MainUI.h"
 using namespace ftxui;
 
-ConnectPage::ConnectPage(MainUI* mainUI) : Page{mainUI} {
+ConnectPage::ConnectPage(MainUI* mainUI) : Page{mainUI}, mConnectButtonLabel{"Connect"} {
 
     mUsernameField = Input(&mUsernameFieldContent);
     mUsernameField |= CatchEvent([&](Event event) {
@@ -34,7 +34,7 @@ ConnectPage::ConnectPage(MainUI* mainUI) : Page{mainUI} {
         return false;
     });
 
-    mConnectButton = Button("Connect", [&] {
+    mConnectButton = Button(&mConnectButtonLabel, [&] {
         OnConnectButtonPress();
     });
       
@@ -61,19 +61,21 @@ ConnectPage::ConnectPage(MainUI* mainUI) : Page{mainUI} {
         );
     });
 
+    
 }
 
 void ConnectPage::OnConnectButtonPress() {
     
     if (mConnecting) { return; }
-    mConnecting = true;
-    
+    SetConnecting(true);
+
+    // New thread to avoid blocking UI thread which blocks other actions
     std::thread([&] {
         SOCKET serverSocket = ConnectToServer();
         if (serverSocket == SOCKET_ERROR || serverSocket == INVALID_SOCKET){
             mMainUI->SetAppState(1);
         }
-        mConnecting = false;   
+        SetConnecting(false);   
         mMainUI->GetScreen().RequestAnimationFrame();
     }).detach();
 
@@ -107,4 +109,9 @@ SOCKET ConnectPage::ConnectToServer() {
 
 Component ConnectPage::GetPageContent() {
     return mPageContent;
+}
+
+void ConnectPage::SetConnecting(bool connecting) {
+    mConnecting = connecting;
+    mConnectButtonLabel = connecting ? "Connecting..." : "Connect";
 }

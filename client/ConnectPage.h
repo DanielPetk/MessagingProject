@@ -9,6 +9,7 @@ class ConnectPage : public Page {
     std::string mUsernameFieldContent;
     std::string mHostnameFieldContent;
     std::string mPortFieldContent;
+    std::string mConnectButtonLabel;
     std::atomic<bool> mConnecting = false;
 
     ftxui::Component mUsernameField;
@@ -20,6 +21,7 @@ class ConnectPage : public Page {
 
     void OnConnectButtonPress();
     SOCKET ConnectToServer();
+    void SetConnecting(bool);
 public:
     ConnectPage(MainUI*);
     ftxui::Component GetPageContent() override;    
