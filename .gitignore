@@ -2,6 +2,7 @@
 build*/
 out*/
 cmake-build-*/
+_deps/
 
 # CMake cache and generated files
 CMakeFiles/
@@ -24,4 +25,5 @@ cmake_install.cmake
 # IDE-specific (CLion, Visual Studio, etc.)
 *.user
 *.vcxproj*
+.vscode/
 .idea/

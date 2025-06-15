@@ -1,5 +1,8 @@
 add_executable(client
     client.cpp
+    MainUI.cpp
+    ConnectPage.cpp
+    ConnectErrorPage.cpp
 )
 
 target_link_libraries(client PRIVATE 
