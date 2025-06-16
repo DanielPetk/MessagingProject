@@ -3,9 +3,11 @@ add_executable(client
     MainUI.cpp
     ConnectPage.cpp
     ConnectErrorPage.cpp
+    ChatPage.cpp
 )
 
 target_link_libraries(client PRIVATE 
+    shared
     ws2_32
     ftxui::screen
     ftxui::dom

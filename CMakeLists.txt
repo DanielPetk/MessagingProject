@@ -14,6 +14,7 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(ftxui)
 
 
-# Add client and server subdirectories
+# Add client and server and shared subdirectories
 add_subdirectory(client)
 add_subdirectory(server)
+add_subdirectory(shared)

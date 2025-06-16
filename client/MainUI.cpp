@@ -7,23 +7,26 @@
 
 using namespace ftxui;
 
-MainUI::MainUI() : mConnectPage{this}, mConnectErrorPage{this}, mScreen{ScreenInteractive::FitComponent()} {
+MainUI::MainUI() : mConnectPage{this}, mConnectErrorPage{this}, mChatPage{this}, mScreen{ScreenInteractive::FitComponent()} {
     
 }
 
 void MainUI::Run() {
     Component connectPageContent = mConnectPage.GetPageContent();
     Component connectErrorPageContent = mConnectErrorPage.GetPageContent();
+    Component chatPageContent = mChatPage.GetPageContent();
 
     Component mainContainer = Container::Tab({
         connectPageContent,
-        connectErrorPageContent
+        connectErrorPageContent,
+        chatPageContent,
     }, &mAppState);
     
     auto screen_renderer = Renderer(mainContainer, [&] {
         switch(mAppState){
             case 0: return connectPageContent->Render(); 
             case 1: return connectErrorPageContent->Render();
+            case 2: return chatPageContent->Render();
         }
         return text("Invalid State");
     });

@@ -21,6 +21,7 @@ class ConnectPage : public Page {
 
     void OnConnectButtonPress();
     SOCKET ConnectToServer();
+    bool SendClientInfo(SOCKET serverSocket);
     void SetConnecting(bool);
 public:
     ConnectPage(MainUI*);

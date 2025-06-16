@@ -4,6 +4,7 @@
 #include <atomic>
 #include "ConnectPage.h"
 #include "MainUI.h"
+#include "shared.h"
 using namespace ftxui;
 
 ConnectPage::ConnectPage(MainUI* mainUI) : Page{mainUI}, mConnectButtonLabel{"Connect"} {
@@ -66,7 +67,7 @@ ConnectPage::ConnectPage(MainUI* mainUI) : Page{mainUI}, mConnectButtonLabel{"Co
 
 void ConnectPage::OnConnectButtonPress() {
     
-    if (mConnecting) { return; }
+    if (mConnecting || mUsernameFieldContent.empty() || mHostnameFieldContent.empty() || mPortFieldContent.empty()) { return; }
     SetConnecting(true);
 
     // New thread to avoid blocking UI thread which blocks other actions
@@ -75,11 +76,21 @@ void ConnectPage::OnConnectButtonPress() {
         if (serverSocket == SOCKET_ERROR || serverSocket == INVALID_SOCKET){
             mMainUI->SetAppState(1);
         }
+        else {
+            SendClientInfo(serverSocket);
+            mMainUI->SetAppState(2);
+        }
         SetConnecting(false);   
         mMainUI->GetScreen().RequestAnimationFrame();
     }).detach();
-
+    
 }
+
+bool ConnectPage::SendClientInfo(SOCKET serverSocket) {
+    std::string initialMessage = APP_IDENTIFIER + DELIM + mUsernameFieldContent + ENDM;
+    send(serverSocket, initialMessage.data(), initialMessage.size(), 0);
+    return true;
+};
 
 SOCKET ConnectPage::ConnectToServer() {
     struct sockaddr_in server_addr;
@@ -106,6 +117,7 @@ SOCKET ConnectPage::ConnectToServer() {
 
     return ssock;
 }
+
 
 Component ConnectPage::GetPageContent() {
     return mPageContent;

@@ -16,4 +16,6 @@ int main() {
 
     MainUI mainUI;
     mainUI.Run();
+
+    WSACleanup();
 }
