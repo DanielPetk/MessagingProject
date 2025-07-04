@@ -1,5 +1,6 @@
 add_executable(server
     server.cpp
+    ServerApp.cpp
 )
 
 target_link_libraries(server PRIVATE
