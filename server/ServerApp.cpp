@@ -1,4 +1,7 @@
 #include <iostream>
+#include <sstream>
+#include <shared/shared.h>
+#include <shared/socket/Socket.h>
 #include "ServerApp.h"
 
 void ServerApp::Run() {
@@ -41,6 +44,8 @@ void ServerApp::Run() {
 }
 
 void ServerApp::AcceptClients() {
+    std::string messageBuffer(MESSAGE_BUFFER_SIZE, '\0');
+
     while (mRunning)
     {
         sockaddr_in clientSockAddr;
@@ -53,7 +58,57 @@ void ServerApp::AcceptClients() {
             return;
         }
 
-        std::cout << "connected";
+        // Look for cient app
+        int bytesRecieved = recv(clientSocket, messageBuffer.data(), MESSAGE_BUFFER_SIZE, 0);
+        if (bytesRecieved <= 0){
+            closesocket(clientSocket);
+            std::cerr << "Client timed out.";
+            continue;
+        }
+
+        std::string message = messageBuffer.substr(0, bytesRecieved);
+        
+        size_t delimPos = message.find(':');
+        if (delimPos == std::string::npos) {
+            closesocket(clientSocket);
+            std::cerr << "Invalid messgae, no delim.";
+            continue;
+        }
+
+        std::string appIdentifier = message.substr(0,delimPos);
+        std::string username = message.substr(delimPos+1);
+
+        if (appIdentifier == APP_IDENTIFIER) {
+            std::string response = SERVER_CONNECTION_ACCEPTED;
+            send(clientSocket, response.data(), response.length(), 0);
+            std::cout << username << " connected!";
+
+            mClientsMutex.lock();
+            mClients[clientSocket] = std::thread([&]{
+                HandleClient(clientSocket);
+            });
+            mClientsMutex.unlock();
+        } else {
+            std::string response = SERVER_CONNECTION_DECLINED;
+            send(clientSocket, response.data(), response.length(), 0);
+            closesocket(clientSocket);
+        }
+
     }
-    
 }
+
+void ServerApp::HandleClient(SOCKET clientSocket) {
+    std::cout << "handle";
+    // std::string messageBuffer(MESSAGE_BUFFER_SIZE, '\0');
+    // std::stringstream messageStream;
+
+    // // Look for signature before we actually initialize chat
+    // int bytesRecieved = recv(clientSocket, messageBuffer.data(), MESSAGE_BUFFER_SIZE, 0);
+    // if (bytesRecieved <= 0){
+    //     return;
+    // }
+
+    // std::cout << messageBuffer;
+
+
+;}

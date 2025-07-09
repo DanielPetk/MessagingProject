@@ -11,16 +11,16 @@ ConnectErrorPage::ConnectErrorPage(MainUI* mainUI) : Page (mainUI) {
 
     mPageContent = Renderer(mOkayButton, [&] {
         return window(text("Connection Error"),
-        hbox({
-            separatorEmpty(),
-            vbox({
-                separatorEmpty(),
-                paragraph("There was an error connecting to the server."),
-                separatorEmpty(),
-                hbox({filler(), mOkayButton->Render(), filler()})
-            }), 
-            separatorEmpty()
-            })
+            center(
+                hcenter(
+                    vbox({
+                        separatorEmpty(),
+                        paragraph("There was an error connecting to the server."),
+                        separatorEmpty(),
+                        hbox({filler(), mOkayButton->Render(), filler()})
+                    })
+                )
+            )
         );
     });
 }

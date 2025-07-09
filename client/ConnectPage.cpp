@@ -2,9 +2,9 @@
 #include <ftxui/component/event.hpp>
 #include <thread>
 #include <atomic>
+#include <shared/shared.h>
 #include "ConnectPage.h"
 #include "MainUI.h"
-#include "shared.h"
 using namespace ftxui;
 
 ConnectPage::ConnectPage(MainUI* mainUI) : Page{mainUI}, mConnectButtonLabel{"Connect"} {
@@ -48,17 +48,17 @@ ConnectPage::ConnectPage(MainUI* mainUI) : Page{mainUI}, mConnectButtonLabel{"Co
 
     mPageContent = Renderer(mInputContainer, [&] {
         return window(text("Connect To Server"),
-            hbox({
-            separatorEmpty(),
-            vbox({
-                separatorEmpty(),
-                hbox({text("Username: "), mUsernameField->Render()}),
-                hbox({text("Hostname: "), mHostnameField->Render()}),
-                hbox({text("Port: "), mPortField->Render() | size(WIDTH, EQUAL, 6)}), // 5 digits for port num
-                separatorDashed(),
-                hbox({filler(), mConnectButton->Render(), filler()})
-            }) | size(WIDTH, EQUAL, 30), separatorEmpty()
-            })
+            center(
+                hcenter({
+                    vbox({
+                        hbox({text("Username: "), mUsernameField->Render()}),
+                        hbox({text("Hostname: "), mHostnameField->Render()}),
+                        hbox({text("Port: "), mPortField->Render() | size(WIDTH, EQUAL, 6)}), // 5 digits for port num
+                        separatorDashed(),
+                        hbox({filler(), mConnectButton->Render(), filler()})
+                    }) | size(WIDTH, EQUAL, 30), 
+                })
+            )
         );
     });
 
@@ -87,7 +87,7 @@ void ConnectPage::OnConnectButtonPress() {
 }
 
 bool ConnectPage::SendClientInfo(SOCKET serverSocket) {
-    std::string initialMessage = APP_IDENTIFIER + DELIM + mUsernameFieldContent + ENDM;
+    std::string initialMessage = APP_IDENTIFIER + DELIM + mUsernameFieldContent;
     send(serverSocket, initialMessage.data(), initialMessage.size(), 0);
     return true;
 };

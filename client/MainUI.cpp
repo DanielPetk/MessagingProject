@@ -7,7 +7,7 @@
 
 using namespace ftxui;
 
-MainUI::MainUI() : mConnectPage{this}, mConnectErrorPage{this}, mChatPage{this}, mScreen{ScreenInteractive::FitComponent()} {
+MainUI::MainUI() : mConnectPage{this}, mConnectErrorPage{this}, mChatPage{this}, mScreen{ScreenInteractive::Fullscreen()} {
     
 }
 
