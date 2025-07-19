@@ -5,17 +5,17 @@
 #include <mutex>
 #include <unordered_map>
 #include <string>
+#include <shared/socket/Socket.h>
 
 const int HOST_BUFFER_SIZE = 1024;
 
 class ServerApp {
-    bool mRunning = false;
+    Socket mServerSocket;
     int mPortNumber = 54321;
-    SOCKET mServerSocket;
-    std::unordered_map<SOCKET, std::thread> mClients;
-    std::mutex mClientsMutex;
+    bool mRunning = false;
+
     void AcceptClients();
-    void HandleClient(SOCKET);
+    // void HandleClient(SOCKET);
 public:
     void Run();
 };
