@@ -1,6 +1,6 @@
 add_executable(client
     client.cpp
-    MainUI.cpp
+    ClientApp.cpp
     ConnectPage.cpp
     ConnectErrorPage.cpp
     ChatPage.cpp

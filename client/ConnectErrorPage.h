@@ -7,6 +7,6 @@ class ConnectErrorPage : public Page {
     ftxui::Component mPageContent;
 
 public:
-    ConnectErrorPage(MainUI*);
+    ConnectErrorPage(ClientApp*);
     ftxui::Component GetPageContent() override;
 };

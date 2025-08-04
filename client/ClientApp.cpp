@@ -1,5 +1,5 @@
 #include <ftxui/component/component.hpp>
-#include "MainUI.h"
+#include "ClientApp.h"
 #include "ConnectPage.h"
 #include "ConnectErrorPage.h"
 
@@ -7,11 +7,11 @@
 
 using namespace ftxui;
 
-MainUI::MainUI() : mConnectPage{this}, mConnectErrorPage{this}, mChatPage{this}, mScreen{ScreenInteractive::Fullscreen()} {
+ClientApp::ClientApp() : mConnectPage{this}, mConnectErrorPage{this}, mChatPage{this}, mScreen{ScreenInteractive::Fullscreen()} {
     
 }
 
-void MainUI::Run() {
+void ClientApp::Run() {
     Component connectPageContent = mConnectPage.GetPageContent();
     Component connectErrorPageContent = mConnectErrorPage.GetPageContent();
     Component chatPageContent = mChatPage.GetPageContent();
@@ -34,14 +34,14 @@ void MainUI::Run() {
     mScreen.Loop(screen_renderer);
 }
 
-void MainUI::Exit() {
+void ClientApp::Exit() {
     mScreen.ExitLoopClosure()();
 }
 
-void MainUI::SetAppState(int appState) {
+void ClientApp::SetAppState(int appState) {
     mAppState = appState; 
 }
 
-ScreenInteractive& MainUI::GetScreen() {
+ScreenInteractive& ClientApp::GetScreen() {
     return mScreen;
 }

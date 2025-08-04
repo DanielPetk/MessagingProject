@@ -4,10 +4,10 @@
 #include <atomic>
 #include <shared/shared.h>
 #include "ConnectPage.h"
-#include "MainUI.h"
+#include "ClientApp.h"
 using namespace ftxui;
 
-ConnectPage::ConnectPage(MainUI* mainUI) : Page{mainUI}, mConnectButtonLabel{"Connect"} {
+ConnectPage::ConnectPage(ClientApp* clientApp) : Page{clientApp}, mConnectButtonLabel{"Connect"} {
 
     mUsernameField = Input(&mUsernameFieldContent);
     mUsernameField |= CatchEvent([&](Event event) {
@@ -74,14 +74,14 @@ void ConnectPage::OnConnectButtonPress() {
     std::thread([&] {
         SOCKET serverSocket = ConnectToServer();
         if (serverSocket == SOCKET_ERROR || serverSocket == INVALID_SOCKET){
-            mMainUI->SetAppState(1);
+            mClientApp->SetAppState(1);
         }
         else {
             SendClientInfo(serverSocket);
-            mMainUI->SetAppState(2);
+            mClientApp->SetAppState(2);
         }
         SetConnecting(false);   
-        mMainUI->GetScreen().RequestAnimationFrame();
+        mClientApp->GetScreen().RequestAnimationFrame();
     }).detach();
     
 }

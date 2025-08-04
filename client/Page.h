@@ -1,12 +1,12 @@
 #pragma once 
 #include <ftxui/component/component.hpp>
-class MainUI;
+class ClientApp;
 
 class Page {
 
 protected:
-    MainUI* mMainUI;
+    ClientApp* mClientApp;
 public:
-    Page(MainUI* mainUI) : mMainUI{mainUI} {}
+    Page(ClientApp* clientApp) : mClientApp{clientApp} {}
     virtual ftxui::Component GetPageContent() = 0;    
 };

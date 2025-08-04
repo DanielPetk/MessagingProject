@@ -3,7 +3,7 @@
 #include <string>
 #include "Page.h"
 
-class MainUI;
+class ClientApp;
 
 class ConnectPage : public Page {
     std::string mUsernameFieldContent;
@@ -24,6 +24,6 @@ class ConnectPage : public Page {
     bool SendClientInfo(SOCKET serverSocket);
     void SetConnecting(bool);
 public:
-    ConnectPage(MainUI*);
+    ConnectPage(ClientApp*);
     ftxui::Component GetPageContent() override;    
 };

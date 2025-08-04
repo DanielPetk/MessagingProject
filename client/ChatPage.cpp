@@ -1,9 +1,9 @@
 #include "ChatPage.h"
-#include "MainUI.h"
+#include "ClientApp.h"
 
 using namespace ftxui;
 
-ChatPage::ChatPage(MainUI* mainUI) : Page(mainUI) {
+ChatPage::ChatPage(ClientApp* clientApp) : Page(clientApp) {
 
 };
 

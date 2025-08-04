@@ -2,7 +2,8 @@
 #include <ws2tcpip.h> 
 #include <windows.h>
 #include <iostream>
-#include "MainUI.h"
+
+#include "ClientApp.h"
 
 
 int main() {
@@ -14,8 +15,8 @@ int main() {
         std::exit(1);
     }
 
-    MainUI mainUI;
-    mainUI.Run();
+    ClientApp clientApp;
+    clientApp.Run();
 
     WSACleanup();
 }
