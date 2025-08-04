@@ -3,12 +3,14 @@
 #include <ftxui/component/screen_interactive.hpp>
 
 #include "ChatPage.h"
+#include "ClientNetworkController.h"
 #include "ConnectErrorPage.h"
 #include "ConnectPage.h"
 
 class ClientApp {
     int mAppState = 0;
     ftxui::ScreenInteractive mScreen; 
+    ClientNetworkController mClientNetworkController;
     ConnectPage mConnectPage;
     ConnectErrorPage mConnectErrorPage;
     ChatPage mChatPage;
@@ -18,4 +20,5 @@ public:
     void Exit();
     void SetAppState(int);
     ftxui::ScreenInteractive& GetScreen();
+    ClientNetworkController& GetController();
 };

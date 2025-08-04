@@ -1,9 +1,12 @@
-#include <ftxui/component/component.hpp>
 #include "ClientApp.h"
-#include "ConnectPage.h"
-#include "ConnectErrorPage.h"
 
 #include <iostream>
+
+#include <ftxui/component/component.hpp>
+
+#include "ConnectErrorPage.h"
+#include "ConnectPage.h"
+
 
 using namespace ftxui;
 
@@ -44,4 +47,8 @@ void ClientApp::SetAppState(int appState) {
 
 ScreenInteractive& ClientApp::GetScreen() {
     return mScreen;
+}
+
+ClientNetworkController& ClientApp::GetController() {
+    return mClientNetworkController;
 }

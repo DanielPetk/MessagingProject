@@ -1,8 +1,9 @@
 #pragma once
 
+#include <optional>
+#include <string>
 #include <winsock2.h>
 #include <ws2tcpip.h>
-#include <optional>
 
 class Socket {
     SOCKET mSocket = INVALID_SOCKET;
@@ -21,6 +22,7 @@ public:
     ~Socket();
    
     void Close();
+    void Connect(const struct sockaddr* addr, socklen_t addrlen);
     void Bind(const struct sockaddr* addr, socklen_t addrlen);
     void Listen(int backlog);
     std::optional<Socket> Accept(struct sockaddr* addr, socklen_t* addrlen);

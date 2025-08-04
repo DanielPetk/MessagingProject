@@ -1,4 +1,5 @@
 #include "ChatPage.h"
+
 #include "ClientApp.h"
 
 using namespace ftxui;

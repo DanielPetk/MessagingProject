@@ -1,4 +1,5 @@
 #pragma once
+
 #include "Page.h"
 
 class ConnectErrorPage : public Page {

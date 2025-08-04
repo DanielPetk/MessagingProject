@@ -1,10 +1,12 @@
 
-#include <ftxui/component/event.hpp>
-#include <thread>
-#include <atomic>
-#include <shared/shared.h>
 #include "ConnectPage.h"
+
+#include <thread>
+#include <ftxui/component/event.hpp>
+
 #include "ClientApp.h"
+#include <shared/shared.h>
+
 using namespace ftxui;
 
 ConnectPage::ConnectPage(ClientApp* clientApp) : Page{clientApp}, mConnectButtonLabel{"Connect"} {
@@ -67,7 +69,10 @@ ConnectPage::ConnectPage(ClientApp* clientApp) : Page{clientApp}, mConnectButton
 
 void ConnectPage::OnConnectButtonPress() {
     
-    if (mConnecting || mUsernameFieldContent.empty() || mHostnameFieldContent.empty() || mPortFieldContent.empty()) { return; }
+    if (mConnecting || mUsernameFieldContent.empty() || mHostnameFieldContent.empty() || mPortFieldContent.empty()) { 
+        return; 
+    }
+    
     SetConnecting(true);
 
     // New thread to avoid blocking UI thread which blocks other actions
@@ -125,5 +130,5 @@ Component ConnectPage::GetPageContent() {
 
 void ConnectPage::SetConnecting(bool connecting) {
     mConnecting = connecting;
-    mConnectButtonLabel = connecting ? "Connecting..." : "Connect";
+    mConnectButtonLabel = connecting ? ConnectPage::ConnectingLabel : ConnectPage::ConnectLabel;
 }

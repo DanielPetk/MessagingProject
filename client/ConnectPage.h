@@ -1,11 +1,17 @@
 #pragma once
-#include <winsock2.h>
+
+#include <atomic>
 #include <string>
+#include <winsock2.h>
+
 #include "Page.h"
 
 class ClientApp;
 
 class ConnectPage : public Page {
+    static constexpr const char* ConnectLabel = "Connect";
+    static constexpr const char* ConnectingLabel = "Connecting...";
+
     std::string mUsernameFieldContent;
     std::string mHostnameFieldContent;
     std::string mPortFieldContent;

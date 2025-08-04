@@ -1,5 +1,7 @@
 #pragma once 
+
 #include <ftxui/component/component.hpp>
+
 class ClientApp;
 
 class Page {

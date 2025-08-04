@@ -1,6 +1,7 @@
 add_executable(client
     client.cpp
     ClientApp.cpp
+    ClientNetworkController.cpp
     ConnectPage.cpp
     ConnectErrorPage.cpp
     ChatPage.cpp
@@ -13,4 +14,5 @@ target_link_libraries(client PRIVATE
     ftxui::dom
     ftxui::component
 )
+
 target_include_directories(client PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})

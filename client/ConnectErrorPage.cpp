@@ -1,4 +1,5 @@
 #include "ConnectErrorPage.h"
+
 #include "ClientApp.h"
 
 using namespace ftxui;

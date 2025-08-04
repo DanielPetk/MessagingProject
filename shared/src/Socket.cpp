@@ -49,23 +49,20 @@ void Socket::Close() {
     mSocket = INVALID_SOCKET;
 }
 
-void Socket::UpdateValidity() {
-    int err = WSAGetLastError();
-    if (err == WSAEBADF || err == WSAENOTSOCK){
-        mSocket = INVALID_SOCKET;
-    }
+void Socket::Connect(const struct sockaddr* addr, socklen_t addrlen) {
+    if (connect(mSocket, addr, addrlen) == SOCKET_ERROR){
+        throw std::runtime_error("Socket failed to connect.");
+    }    
 }
 
 void Socket::Bind(const struct sockaddr* addr, socklen_t addrlen) {
     if (bind(mSocket, addr, addrlen) == SOCKET_ERROR) {
-        UpdateValidity();
         throw std::runtime_error("Socket failed to bind.");
     }
 }
 
 void Socket::Listen(int backlog) {
     if (listen(mSocket, backlog) == SOCKET_ERROR) {
-        UpdateValidity();
         throw std::runtime_error("Socket failed to listen.");
     }
 }
@@ -80,7 +77,6 @@ std::optional<Socket> Socket::Accept(struct sockaddr* addr, socklen_t* addrlen) 
     if (err == WSAEWOULDBLOCK) {
         return std::nullopt; // Non-blocking and no connection available so no fatal error
     } else {
-        UpdateValidity();
         throw std::runtime_error("Socket failed to accept.");
     }
 }
@@ -97,7 +93,6 @@ std::optional<std::string> Socket::Recv(int flags) {
     if (err == WSAEWOULDBLOCK) {
         return std::nullopt; // Non-blocking and no connection available so no fatal error
     } else {
-        UpdateValidity();
         throw std::runtime_error("Socket failed to recv.");
     }
 }
@@ -113,7 +108,6 @@ std::optional<int> Socket::Send(std::string_view message, int flags) {
     if (err == WSAEWOULDBLOCK) {
         return std::nullopt; // Non-blocking and no connection available so no fatal error
     } else {
-        UpdateValidity();
         throw std::runtime_error("Socket failed to send.");
     }
 }
