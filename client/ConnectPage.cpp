@@ -9,7 +9,7 @@
 
 using namespace ftxui;
 
-ConnectPage::ConnectPage(ClientApp* clientApp) : Page{clientApp}, mConnectButtonLabel{"Connect"} {
+ConnectPage::ConnectPage(ClientApp* clientApp) : Page{clientApp}, mConnectButtonLabel{ConnectPage::ConnectLabel} {
 
     mUsernameField = Input(&mUsernameFieldContent);
     mUsernameField |= CatchEvent([&](Event event) {
@@ -73,62 +73,24 @@ void ConnectPage::OnConnectButtonPress() {
         return; 
     }
     
-    SetConnecting(true);
+    mConnectButtonLabel = ConnectPage::ConnectingLabel;
 
     // New thread to avoid blocking UI thread which blocks other actions
     std::thread([&] {
-        SOCKET serverSocket = ConnectToServer();
-        if (serverSocket == SOCKET_ERROR || serverSocket == INVALID_SOCKET){
-            mClientApp->SetAppState(1);
-        }
-        else {
-            SendClientInfo(serverSocket);
+        auto connectResult = mClientApp->GetController().ConnectToServer(mUsernameFieldContent, mHostnameFieldContent, mPortFieldContent);
+        if (connectResult){
             mClientApp->SetAppState(2);
         }
-        SetConnecting(false);   
+        else {
+            mClientApp->SetAppState(1);
+        }
+        mConnectButtonLabel = ConnectPage::ConnectLabel;
         mClientApp->GetScreen().RequestAnimationFrame();
     }).detach();
     
 }
 
-bool ConnectPage::SendClientInfo(SOCKET serverSocket) {
-    std::string initialMessage = APP_IDENTIFIER + DELIM + mUsernameFieldContent;
-    send(serverSocket, initialMessage.data(), initialMessage.size(), 0);
-    return true;
-};
-
-SOCKET ConnectPage::ConnectToServer() {
-    struct sockaddr_in server_addr;
-    server_addr.sin_family = AF_INET;
-    server_addr.sin_port = htons(std::stoi(mPortFieldContent));
-    
-    hostent* he = gethostbyname(mHostnameFieldContent.c_str());
-    if (!he) {
-        return SOCKET_ERROR;
-    }
-    memcpy(&server_addr.sin_addr, he->h_addr, he->h_length);
-
-    // Create socket
-    SOCKET ssock = socket( AF_INET, SOCK_STREAM, 0 );
-    if(ssock == INVALID_SOCKET){
-        return SOCKET_ERROR;
-    }
-
-    // Connect to server 
-    if (connect(ssock, (struct sockaddr*) &server_addr, sizeof(server_addr)) == SOCKET_ERROR){
-        closesocket(ssock);
-        return SOCKET_ERROR;
-    }    
-
-    return ssock;
-}
-
-
 Component ConnectPage::GetPageContent() {
     return mPageContent;
 }
 
-void ConnectPage::SetConnecting(bool connecting) {
-    mConnecting = connecting;
-    mConnectButtonLabel = connecting ? ConnectPage::ConnectingLabel : ConnectPage::ConnectLabel;
-}

@@ -1,7 +1,8 @@
 cmake_minimum_required(VERSION 3.15)
 project(MessagingProject)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 include(FetchContent)
 
@@ -13,8 +14,6 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(ftxui)
 
-
-# Add client and server and shared subdirectories
 add_subdirectory(client)
 add_subdirectory(server)
 add_subdirectory(shared)
