@@ -75,8 +75,7 @@ void ConnectPage::OnConnectButtonPress() {
 
     // New thread to avoid blocking UI thread which blocks other actions
     std::thread([&] {
-        auto connectResult = mClientApp->GetController().ConnectToServer(mUsernameFieldContent, mHostnameFieldContent, mPortFieldContent);
-        if (connectResult){
+        if ( mClientApp->GetController().ConnectToServer(mUsernameFieldContent, mHostnameFieldContent, mPortFieldContent) ){
             mClientApp->SetAppState(2);
         }
         else {

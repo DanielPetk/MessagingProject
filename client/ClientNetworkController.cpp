@@ -17,8 +17,12 @@ bool ClientNetworkController::ConnectToServer(const std::string& username, const
 
     // Create socket
     mServerSocket = Socket( AF_INET, SOCK_STREAM, 0 );
+
     // Connect to server 
-    mServerSocket.Connect(reinterpret_cast<sockaddr*>(&server_addr), sizeof(server_addr));
+    if (!mServerSocket.Connect(reinterpret_cast<sockaddr*>(&server_addr), sizeof(server_addr))) {
+        mServerSocket.Close();
+        return false;
+    }
 
     return ValidateServer(username);
 }
@@ -42,7 +46,6 @@ bool ClientNetworkController::ValidateServer(const std::string& username) {
     if (recvFuture.wait_for(std::chrono::seconds(1)) == std::future_status::ready) {
         return recvFuture.get() == SERVER_CONNECTION_ACCEPTED;
     } else {
-        // TODO THIS WILL CAUSE ERROR PLEASE FIX
         mServerSocket.Close();
         recvFuture.wait();
         return false;
