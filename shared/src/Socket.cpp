@@ -42,72 +42,62 @@ Socket::~Socket() {
     Close();
 }
 
-void Socket::Close() {
-    if (IsValid()) {
-        closesocket(mSocket);
-    }
+int Socket::GetLastError() {
+    return WSAGetLastError();
+}
+
+
+std::expected<void, int> Socket::Close() {
+    if (IsValid() && closesocket(mSocket) == SOCKET_ERROR) {
+        return std::unexpected{GetLastError()};
+    } 
     mSocket = INVALID_SOCKET;
+    return {};
 }
 
-void Socket::Connect(const struct sockaddr* addr, socklen_t addrlen) {
+std::expected<void, int> Socket::Connect(const struct sockaddr* addr, socklen_t addrlen) {
     if (connect(mSocket, addr, addrlen) == SOCKET_ERROR){
-        throw std::runtime_error("Socket failed to connect.");
+        return std::unexpected{GetLastError()};
     }    
+    return {};
 }
 
-void Socket::Bind(const struct sockaddr* addr, socklen_t addrlen) {
+std::expected<void, int> Socket::Bind(const struct sockaddr* addr, socklen_t addrlen) {
     if (bind(mSocket, addr, addrlen) == SOCKET_ERROR) {
-        throw std::runtime_error("Socket failed to bind.");
+        return std::unexpected{GetLastError()};
     }
+    return {};
 }
 
-void Socket::Listen(int backlog) {
+std::expected<void, int> Socket::Listen(int backlog) {
     if (listen(mSocket, backlog) == SOCKET_ERROR) {
-        throw std::runtime_error("Socket failed to listen.");
+        return std::unexpected{GetLastError()};
     }
+    return {};
 }
 
-std::optional<Socket> Socket::Accept(struct sockaddr* addr, socklen_t* addrlen) {
+std::expected<Socket, int> Socket::Accept(struct sockaddr* addr, socklen_t* addrlen) {
     SOCKET otherSocket = accept(mSocket, addr, addrlen);
     if (otherSocket != INVALID_SOCKET){
         return Socket{otherSocket};
     }
-
-    int err = WSAGetLastError();
-    if (err == WSAEWOULDBLOCK) {
-        return std::nullopt; // Non-blocking and no connection available so no fatal error
-    } else {
-        throw std::runtime_error("Socket failed to accept.");
-    }
+    return std::unexpected{GetLastError()};
 }
 
-std::optional<std::string> Socket::Recv(int flags) {
+std::expected<std::string, int> Socket::Recv(int flags) {
     char buffer[MESSAGE_BUFFER_SIZE] = "\0";
     int bytesRecieved = recv(mSocket, buffer, MESSAGE_BUFFER_SIZE, flags);
 
     if (bytesRecieved >= 0) {
         return std::string(buffer, bytesRecieved);
     }
-
-    int err = WSAGetLastError();
-    if (err == WSAEWOULDBLOCK) {
-        return std::nullopt; // Non-blocking and no connection available so no fatal error
-    } else {
-        throw std::runtime_error("Socket failed to recv.");
-    }
+    return std::unexpected{GetLastError()};
 }
 
-std::optional<int> Socket::Send(std::string_view message, int flags) {
+std::expected<int, int> Socket::Send(std::string_view message, int flags) {
     int bytesSent = send(mSocket, message.data(), message.length(), flags);
-
     if (bytesSent >= 0) {
         return bytesSent;
     }
-
-    int err = WSAGetLastError();
-    if (err == WSAEWOULDBLOCK) {
-        return std::nullopt; // Non-blocking and no connection available so no fatal error
-    } else {
-        throw std::runtime_error("Socket failed to send.");
-    }
+    return std::unexpected{GetLastError()};
 }

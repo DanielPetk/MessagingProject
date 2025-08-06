@@ -62,9 +62,7 @@ ConnectPage::ConnectPage(ClientApp* clientApp) : Page{clientApp}, mConnectButton
                 })
             )
         );
-    });
-
-    
+    });    
 }
 
 void ConnectPage::OnConnectButtonPress() {
