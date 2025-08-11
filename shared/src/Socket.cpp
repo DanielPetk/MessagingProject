@@ -101,3 +101,10 @@ std::expected<int, int> Socket::Send(std::string_view message, int flags) {
     }
     return std::unexpected{GetLastError()};
 }
+
+std::expected<void, int> Socket::Shutdown(int how) {
+    if (shutdown(mSocket, how) == SOCKET_ERROR){
+        return std::unexpected{GetLastError()};
+    }    
+    return {};
+}

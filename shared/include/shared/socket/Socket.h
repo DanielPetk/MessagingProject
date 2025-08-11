@@ -29,6 +29,7 @@ public:
     std::expected<Socket, int> Accept(struct sockaddr* addr, socklen_t* addrlen);
     std::expected<std::string, int> Recv(int flags = 0);
     std::expected<int, int> Send(std::string_view message, int flags = 0);
+    std::expected<void, int> Shutdown(int how);
     
     SOCKET Get() {return mSocket;}
     bool IsValid() {return mSocket != INVALID_SOCKET;}

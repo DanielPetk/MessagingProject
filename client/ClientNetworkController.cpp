@@ -20,7 +20,7 @@ bool ClientNetworkController::ConnectToServer(const std::string& username, const
 
     // Connect to server 
     if (!mServerSocket.Connect(reinterpret_cast<sockaddr*>(&server_addr), sizeof(server_addr))) {
-        mServerSocket.Close();
+        mServerSocket.Shutdown(SD_BOTH);
         return false;
     }
 
@@ -31,9 +31,9 @@ bool ClientNetworkController::ValidateServer(const std::string& username) {
     std::string validationMessage = APP_IDENTIFIER + DELIM + username;
     auto sendRes = mServerSocket.Send(validationMessage, 0);
 
-    // If the socket is blocked (should never happen) or if the other side of the connection is not closed
+    // If error or if the other side of the connection is closed
     if (!sendRes || sendRes.value() == 0) {
-        mServerSocket.Close();
+        mServerSocket.Shutdown(SD_BOTH);
         return false;
     }
 
@@ -45,9 +45,9 @@ bool ClientNetworkController::ValidateServer(const std::string& username) {
 
     if (recvFuture.wait_for(std::chrono::seconds(1)) == std::future_status::ready) {
         return recvFuture.get() == SERVER_CONNECTION_ACCEPTED;
-    } else {
-        mServerSocket.Close();
-        recvFuture.wait();
-        return false;
     }
+
+    mServerSocket.Shutdown(SD_BOTH);
+    recvFuture.wait();
+    return false;
 }

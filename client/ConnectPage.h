@@ -1,6 +1,7 @@
 #pragma once
 
 #include <atomic>
+#include <future>
 #include <string>
 #include <winsock2.h>
 
@@ -22,13 +23,14 @@ class ConnectPage : public Page {
     ftxui::Component mHostnameField;
     ftxui::Component mPortField;
     ftxui::Component mConnectButton;
+    ftxui::Component mExitButton;
     ftxui::Component mInputContainer;
     ftxui::Component mPageContent;
 
+    std::future<void> mConnectFuture;
+
     void OnConnectButtonPress();
-    SOCKET ConnectToServer();
-    bool SendClientInfo(SOCKET serverSocket);
-    void SetConnecting(bool);
+
 public:
     ConnectPage(ClientApp*);
     ftxui::Component GetPageContent() override;    

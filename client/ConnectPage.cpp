@@ -40,12 +40,17 @@ ConnectPage::ConnectPage(ClientApp* clientApp) : Page{clientApp}, mConnectButton
     mConnectButton = Button(&mConnectButtonLabel, [&] {
         OnConnectButtonPress();
     });
-      
+
+    mExitButton = Button("Close", [&] {
+        mClientApp->Exit();
+    });
+
     mInputContainer = Container::Vertical({
         mUsernameField,
         mHostnameField,
         mPortField,
-        mConnectButton
+        mConnectButton,
+        mExitButton
     });
 
     mPageContent = Renderer(mInputContainer, [&] {
@@ -57,8 +62,12 @@ ConnectPage::ConnectPage(ClientApp* clientApp) : Page{clientApp}, mConnectButton
                         hbox({text("Hostname: "), mHostnameField->Render()}),
                         hbox({text("Port: "), mPortField->Render() | size(WIDTH, EQUAL, 6)}), // 5 digits for port num
                         separatorDashed(),
-                        hbox({filler(), mConnectButton->Render(), filler()})
-                    }) | size(WIDTH, EQUAL, 30), 
+                        vbox({
+                            hbox({filler(), mConnectButton->Render(), filler()}),
+                            hbox({filler(), mExitButton->Render(), filler()})
+                        }) | center
+
+                    }) | size(WIDTH, EQUAL, 30)
                 })
             )
         );
@@ -71,19 +80,21 @@ void ConnectPage::OnConnectButtonPress() {
         return; 
     }
     
+    mConnecting = true;
     mConnectButtonLabel = ConnectPage::ConnectingLabel;
 
     // New thread to avoid blocking UI thread which blocks other actions
-    std::thread([&] {
+    mConnectFuture = std::async(std::launch::async , [&] {
         if ( mClientApp->GetController().ConnectToServer(mUsernameFieldContent, mHostnameFieldContent, mPortFieldContent) ){
             mClientApp->SetAppState(2);
         }
         else {
             mClientApp->SetAppState(1);
         }
+        mConnecting = false;
         mConnectButtonLabel = ConnectPage::ConnectLabel;
         mClientApp->GetScreen().RequestAnimationFrame();
-    }).detach();
+    });
     
 }
 

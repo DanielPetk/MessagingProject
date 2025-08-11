@@ -1,5 +1,6 @@
 #pragma once
 
+#include <atomic>
 #include <ftxui/component/screen_interactive.hpp>
 
 #include "ChatPage.h"
@@ -8,9 +9,21 @@
 #include "ConnectPage.h"
 
 class ClientApp {
-    int mAppState = 0;
     ftxui::ScreenInteractive mScreen; 
+    ftxui::Closure mExit;
+    int mAppState = 0;
+    
+    // Whether the signals should actually do something
+    std::atomic<bool> mPropogateEvents = false;
+
+    // UI -> Network Signals
+
+    // Network -> UI Signals
+
+    // Network stuff
     ClientNetworkController mClientNetworkController;
+    
+    // UI Pages
     ConnectPage mConnectPage;
     ConnectErrorPage mConnectErrorPage;
     ChatPage mChatPage;

@@ -7,6 +7,7 @@ _deps/
 # CMake cache and generated files
 CMakeFiles/
 CMakeCache.txt
+todo.txt
 Makefile
 cmake_install.cmake
 *.ninja

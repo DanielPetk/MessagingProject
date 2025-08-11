@@ -10,7 +10,7 @@
 
 using namespace ftxui;
 
-ClientApp::ClientApp() : mConnectPage{this}, mConnectErrorPage{this}, mChatPage{this}, mScreen{ScreenInteractive::Fullscreen()} {
+ClientApp::ClientApp() : mConnectPage{this}, mConnectErrorPage{this}, mChatPage{this}, mScreen{ScreenInteractive::Fullscreen()}, mExit{mScreen.ExitLoopClosure()} {
     
 }
 
@@ -38,7 +38,7 @@ void ClientApp::Run() {
 }
 
 void ClientApp::Exit() {
-    mScreen.ExitLoopClosure()();
+    mExit();
 }
 
 void ClientApp::SetAppState(int appState) {
