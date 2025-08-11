@@ -27,11 +27,14 @@ class ConnectPage : public Page {
     ftxui::Component mInputContainer;
     ftxui::Component mPageContent;
 
-    std::future<void> mConnectFuture;
-
     void OnConnectButtonPress();
-
+    
 public:
+    
+    // UI -> Network on button
+    std::function<void(const std::string&, const std::string& , const std::string&)> mAttemptConnection;    
+
     ConnectPage(ClientApp*);
     ftxui::Component GetPageContent() override;    
+    void SetConnecting(bool connecting);
 };

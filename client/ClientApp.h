@@ -13,12 +13,8 @@ class ClientApp {
     ftxui::Closure mExit;
     int mAppState = 0;
     
-    // Whether the signals should actually do something
-    std::atomic<bool> mPropogateEvents = false;
-
-    // UI -> Network Signals
-
-    // Network -> UI Signals
+    // Whether the callbacks should actually do something
+    std::atomic<bool> mPropogateEvents = true;
 
     // Network stuff
     ClientNetworkController mClientNetworkController;
@@ -27,6 +23,8 @@ class ClientApp {
     ConnectPage mConnectPage;
     ConnectErrorPage mConnectErrorPage;
     ChatPage mChatPage;
+
+    void SetupCallbacks();
 public:
     ClientApp();
     void Run();

@@ -79,26 +79,18 @@ void ConnectPage::OnConnectButtonPress() {
     if (mConnecting || mUsernameFieldContent.empty() || mHostnameFieldContent.empty() || mPortFieldContent.empty()) { 
         return; 
     }
-    
-    mConnecting = true;
-    mConnectButtonLabel = ConnectPage::ConnectingLabel;
 
-    // New thread to avoid blocking UI thread which blocks other actions
-    mConnectFuture = std::async(std::launch::async , [&] {
-        if ( mClientApp->GetController().ConnectToServer(mUsernameFieldContent, mHostnameFieldContent, mPortFieldContent) ){
-            mClientApp->SetAppState(2);
-        }
-        else {
-            mClientApp->SetAppState(1);
-        }
-        mConnecting = false;
-        mConnectButtonLabel = ConnectPage::ConnectLabel;
-        mClientApp->GetScreen().RequestAnimationFrame();
-    });
-    
+    if (mAttemptConnection) {
+        mAttemptConnection(mUsernameFieldContent, mHostnameFieldContent, mPortFieldContent);
+    }
 }
 
 Component ConnectPage::GetPageContent() {
     return mPageContent;
+}
+
+void ConnectPage::SetConnecting(bool connecting) {
+    mConnecting = connecting;
+    mConnectButtonLabel = connecting ? ConnectPage::ConnectingLabel : ConnectPage::ConnectLabel;
 }
 

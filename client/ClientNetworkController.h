@@ -1,14 +1,20 @@
 #pragma once 
 
 #include <atomic>
+#include <future>
 #include <shared/socket/Socket.h>
 
 class ClientNetworkController {
 
     Socket mServerSocket;
-    std::atomic<bool> mConnecting = false;
+    std::future<void> mConnectingFuture;
 
     bool ValidateServer(const std::string& username);    
+
 public:
-    bool ConnectToServer(const std::string& username, const std::string& host, const std::string& port);
+
+    // Network -> UI on completion of connection
+    std::function<void(bool)> mConnectingDone;    
+
+    void ConnectToServer(std::string username, std::string host, std::string port);
 };
