@@ -1,10 +1,11 @@
 add_executable(client
     client.cpp
-    ClientApp.cpp
+    MainInterface.cpp
     ClientNetworkController.cpp
     ConnectPage.cpp
     ConnectErrorPage.cpp
     ChatPage.cpp
+    ClientApp.cpp
 )
 
 target_link_libraries(client PRIVATE 

@@ -1,36 +1,47 @@
-#include <future>
 #include <chrono>
 
 #include "ClientNetworkController.h"
+#include "MainInterface.h"
 #include <shared/shared.h>
 
-void ClientNetworkController::ConnectToServer(std::string username, std::string host, std::string port) {
-    struct sockaddr_in server_addr;
-    server_addr.sin_family = AF_INET;
-    server_addr.sin_port = htons(std::stoi(port));
-    
-    hostent* he = gethostbyname(host.c_str());
-    if (!he) {
-        if (mConnectingDone) {mConnectingDone(false);}
-        return;
-    }
-    memcpy(&server_addr.sin_addr, he->h_addr, he->h_length);
+#include <iostream>
 
-    // Create socket
-    mServerSocket = Socket( AF_INET, SOCK_STREAM, 0 );
-    
-    mConnectingFuture = std::async(std::launch::async, [&] {
+void ClientNetworkController::ConnectToServer(std::string username, std::string host, std::string port) {    
+    mConnectingFuture = std::async(std::launch::async, [
+        username = std::move(username),
+        host = std::move(host),
+        port = std::move(port),
+        this
+    ] {
+        if (!mInterface) { return; }
+
+        struct sockaddr_in server_addr;
+        server_addr.sin_family = AF_INET;
+        server_addr.sin_port = htons(std::stoi(port));
         
+        hostent* he = gethostbyname(host.c_str());
+        if (!he) {
+            mInterface->OnConnectionError();
+            return;
+        }
+        memcpy(&server_addr.sin_addr, he->h_addr, he->h_length);
+
+        // Create socket
+        mServerSocket = Socket( AF_INET, SOCK_STREAM, 0 );
+            
         // Connect to server 
         if (!mServerSocket.Connect(reinterpret_cast<sockaddr*>(&server_addr), sizeof(server_addr))) {
             mServerSocket.Shutdown(SD_BOTH);
-            if (mConnectingDone) {mConnectingDone(false);}
+            mInterface->OnConnectionError();
             return;
         }
-    
-        bool valid = ValidateServer(username);
-        if (mConnectingDone) {mConnectingDone(valid);}
 
+        if(ValidateServer(username)) {
+            mInterface->OnConnectionSuccess();
+        }
+        else {
+            mInterface->OnConnectionError();
+        }
     });
 
 }
@@ -59,3 +70,8 @@ bool ClientNetworkController::ValidateServer(const std::string& username) {
     recvFuture.wait();
     return false;
 }
+
+void ClientNetworkController::AddInterface(std::shared_ptr<MainInterface> mainInterface) {
+    mInterface = mainInterface;
+}
+

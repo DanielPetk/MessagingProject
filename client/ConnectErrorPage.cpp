@@ -1,13 +1,13 @@
 #include "ConnectErrorPage.h"
 
-#include "ClientApp.h"
+#include "MainInterface.h"
 
 using namespace ftxui;
 
-ConnectErrorPage::ConnectErrorPage(ClientApp* clientApp) : Page (clientApp) {
+ConnectErrorPage::ConnectErrorPage(MainInterface* mainInterface) : Page (mainInterface) {
 
     mOkayButton = Button("OK", [&] {
-        mClientApp->SetAppState(0);        
+        mMainInterface->SetAppState(0);        
     });
 
     mPageContent = Renderer(mOkayButton, [&] {

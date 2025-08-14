@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Page.h"
+#include <shared/Page.h>
 
 class ConnectErrorPage : public Page {
 
@@ -8,6 +8,6 @@ class ConnectErrorPage : public Page {
     ftxui::Component mPageContent;
 
 public:
-    ConnectErrorPage(ClientApp*);
+    ConnectErrorPage(MainInterface*);
     ftxui::Component GetPageContent() override;
 };

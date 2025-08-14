@@ -1,20 +1,23 @@
 #pragma once 
 
-#include <atomic>
 #include <future>
+#include <memory>
+#include <mutex>
 #include <shared/socket/Socket.h>
+
+class MainInterface;
 
 class ClientNetworkController {
 
     Socket mServerSocket;
+    std::shared_ptr<MainInterface> mInterface = nullptr;
+    std::mutex mInterfaceMutex;
     std::future<void> mConnectingFuture;
-
+    
     bool ValidateServer(const std::string& username);    
 
 public:
 
-    // Network -> UI on completion of connection
-    std::function<void(bool)> mConnectingDone;    
-
     void ConnectToServer(std::string username, std::string host, std::string port);
+    void AddInterface(std::shared_ptr<MainInterface>  mainInterface);
 };

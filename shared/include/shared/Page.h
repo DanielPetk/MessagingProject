@@ -2,13 +2,13 @@
 
 #include <ftxui/component/component.hpp>
 
-class ClientApp;
+class MainInterface;
 
 class Page {
 
 protected:
-    ClientApp* mClientApp;
+    MainInterface* mMainInterface;
 public:
-    Page(ClientApp* clientApp) : mClientApp{clientApp} {}
+    Page(MainInterface* mainInterface) : mMainInterface{mainInterface} {}
     virtual ftxui::Component GetPageContent() = 0;    
 };

@@ -1,12 +1,12 @@
 #pragma once
 
-#include "Page.h"
+#include <shared/Page.h>
 
-class ClientApp;
+class MainInterface;
 
 class ChatPage : public Page {
 
 public:
-    ChatPage(ClientApp*);
+    ChatPage(MainInterface*);
     ftxui::Component GetPageContent() override;
 };

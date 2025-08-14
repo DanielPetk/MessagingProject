@@ -1,35 +1,17 @@
 #pragma once
 
-#include <atomic>
-#include <ftxui/component/screen_interactive.hpp>
+#include <memory>
 
-#include "ChatPage.h"
 #include "ClientNetworkController.h"
-#include "ConnectErrorPage.h"
-#include "ConnectPage.h"
+#include "MainInterface.h"
 
 class ClientApp {
-    ftxui::ScreenInteractive mScreen; 
-    ftxui::Closure mExit;
-    int mAppState = 0;
-    
-    // Whether the callbacks should actually do something
-    std::atomic<bool> mPropogateEvents = true;
 
-    // Network stuff
-    ClientNetworkController mClientNetworkController;
-    
-    // UI Pages
-    ConnectPage mConnectPage;
-    ConnectErrorPage mConnectErrorPage;
-    ChatPage mChatPage;
+    ClientNetworkController mNetworkController;
+    std::shared_ptr<MainInterface> mMainInterface = nullptr;
 
-    void SetupCallbacks();
 public:
+
     ClientApp();
     void Run();
-    void Exit();
-    void SetAppState(int);
-    ftxui::ScreenInteractive& GetScreen();
-    ClientNetworkController& GetController();
 };

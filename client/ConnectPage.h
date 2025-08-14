@@ -5,9 +5,9 @@
 #include <string>
 #include <winsock2.h>
 
-#include "Page.h"
+#include <shared/Page.h>
 
-class ClientApp;
+class MainInterface;
 
 class ConnectPage : public Page {
     static constexpr const char* ConnectLabel = "Connect";
@@ -30,11 +30,8 @@ class ConnectPage : public Page {
     void OnConnectButtonPress();
     
 public:
-    
-    // UI -> Network on button
-    std::function<void(const std::string&, const std::string& , const std::string&)> mAttemptConnection;    
 
-    ConnectPage(ClientApp*);
+    ConnectPage(MainInterface*);
     ftxui::Component GetPageContent() override;    
     void SetConnecting(bool connecting);
 };

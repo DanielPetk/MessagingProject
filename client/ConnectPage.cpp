@@ -4,12 +4,13 @@
 #include <thread>
 #include <ftxui/component/event.hpp>
 
-#include "ClientApp.h"
+#include "MainInterface.h"
+#include "ClientNetworkController.h"
 #include <shared/shared.h>
 
 using namespace ftxui;
 
-ConnectPage::ConnectPage(ClientApp* clientApp) : Page{clientApp}, mConnectButtonLabel{ConnectPage::ConnectLabel} {
+ConnectPage::ConnectPage(MainInterface* mainInterface) : Page{mainInterface}, mConnectButtonLabel{ConnectPage::ConnectLabel} {
 
     mUsernameField = Input(&mUsernameFieldContent);
     mUsernameField |= CatchEvent([&](Event event) {
@@ -42,7 +43,7 @@ ConnectPage::ConnectPage(ClientApp* clientApp) : Page{clientApp}, mConnectButton
     });
 
     mExitButton = Button("Close", [&] {
-        mClientApp->Exit();
+        mMainInterface->Exit();
     });
 
     mInputContainer = Container::Vertical({
@@ -75,13 +76,12 @@ ConnectPage::ConnectPage(ClientApp* clientApp) : Page{clientApp}, mConnectButton
 }
 
 void ConnectPage::OnConnectButtonPress() {
-    
     if (mConnecting || mUsernameFieldContent.empty() || mHostnameFieldContent.empty() || mPortFieldContent.empty()) { 
         return; 
     }
-
-    if (mAttemptConnection) {
-        mAttemptConnection(mUsernameFieldContent, mHostnameFieldContent, mPortFieldContent);
+    SetConnecting(true);
+    if (mMainInterface) {
+        mMainInterface->GetNetworkController()->ConnectToServer(mUsernameFieldContent, mHostnameFieldContent, mPortFieldContent);
     }
 }
 
