@@ -39,6 +39,8 @@ ConnectPage::ConnectPage(MainInterface* mainInterface) : Page{mainInterface}, mC
     });
 
     mConnectButton = Button(&mConnectButtonLabel, [&] {
+        mMainInterface->SetAppState(2);
+        return;
         OnConnectButtonPress();
     });
 
@@ -55,23 +57,29 @@ ConnectPage::ConnectPage(MainInterface* mainInterface) : Page{mainInterface}, mC
     });
 
     mPageContent = Renderer(mInputContainer, [&] {
-        return window(text("Connect To Server"),
+        return 
             center(
                 hcenter({
-                    vbox({
-                        hbox({text("Username: "), mUsernameField->Render()}),
-                        hbox({text("Hostname: "), mHostnameField->Render()}),
-                        hbox({text("Port: "), mPortField->Render() | size(WIDTH, EQUAL, 6)}), // 5 digits for port num
-                        separatorDashed(),
-                        vbox({
-                            hbox({filler(), mConnectButton->Render(), filler()}),
-                            hbox({filler(), mExitButton->Render(), filler()})
-                        }) | center
-
-                    }) | size(WIDTH, EQUAL, 30)
+                    window(text("Connect To Server"), 
+                        hbox({
+                            filler() | size(WIDTH, EQUAL, 1),
+                            vbox({
+                                filler() | size(HEIGHT, EQUAL, 1),
+                                hbox({text("Username: "), mUsernameField->Render()}),
+                                hbox({text("Hostname: "), mHostnameField->Render()}),
+                                hbox({text("Port: "), mPortField->Render() | size(WIDTH, EQUAL, 6)}), // 5 digits for port num
+                                separatorDashed(),
+                                vbox({
+                                    hbox({filler(), mConnectButton->Render(), filler()}),
+                                    hbox({filler(), mExitButton->Render(), filler()})
+                                }) | center,
+                            }) | size(WIDTH, EQUAL, 40),
+                            filler() | size(WIDTH, EQUAL, 1)
+                        })
+                    )
                 })
-            )
-        );
+            );
+        
     });    
 }
 

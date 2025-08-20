@@ -7,6 +7,14 @@
 
 class MainInterface;
 
+struct Message {
+    Message(const std::string& username, const std::string& message) : mUsername{username}, mMessage{message} {}
+    Message(const std::string& username, const std::string& message, bool sentByThisClient) : mUsername{username}, mMessage{message}, mSentByThisClient{sentByThisClient} {}
+    std::string mUsername;
+    std::string mMessage;
+    bool mSentByThisClient = false;
+};
+
 class ClientNetworkController {
 
     Socket mServerSocket;
