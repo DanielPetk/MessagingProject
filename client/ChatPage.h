@@ -1,6 +1,6 @@
 #pragma once
 
-#include <vector>
+#include <list>
 
 #include "ClientNetworkController.h"
 #include <shared/Page.h>
@@ -10,19 +10,26 @@ class MainInterface;
 
 class ChatPage : public Page {
 
-    std::vector<Message> mMessages = {{"John", "This is a test message"},{"John", "This is a test message"},{"John", "This is a test message"},{"John", "This is a test message"},{"John", "This is a test message"},{"John", "This is a test message"},{"John", "This is a test message"},{"John", "This is a test message"},{"John", "This is a test message"},{"John", "This is a test message"},{"John", "This is a test message"},{"John", "This is a test message"},{"John", "This is a test message"},{"John", "This is a test message"},{"John", "This is a test message"},{"John", "This is a test message"},{"John", "This is a test message"},{"John", "This is a test message"},{"John", "This is a test message"},{"John", "This is a test message"},{"John", "This is a test message"},{"John", "This is a test message"},{"John", "This is a test message"},{"John", "This is a test message"},{"John", "This is a test message"},{"John", "This is a test message"},{"John", "This is a test message"},{"John", "This is a test message"},{"John", "This is a test message"},{"John", "This is a test message"},{"John", "This is a test message"},{"John", "This is a test message"},{"John", "This is a test message"},{"John", "This is a test message"},{"John", "This is a test message"},{"John", "This is a test message"},{"John", "This is a test message"},{"John", "This is a test message"},{"John", "This is a test message"},{"John", "This is a test message"},{"John", "This is a test message"},{"John", "This is a test message"},{"John", "This is a test message"},{"John", "This is a test message"},{"John", "This is a test message"},{"John", "This is a test message"},{"John", "This is a test message"},{"John", "This is a test message"},{"John", "This is a test message"},{"John", "This is a test message"},{"John", "This is a test message"},{"John", "This is a test message"},{"John", "This is a test message"},{"John", "This is a test message"},{"John", "This is a test message"},{"John", "This is a test message"},{"John", "This is a test message"},{"John", "This is a test message"},{"John", "This is a test message"},{"John", "This is a test message"},{"John", "This is a test message"},{"John", "This is a test message"},{"John", "This is a test message"},{"John", "This is a test message"},{"John", "This is a test message"},};
+    static constexpr int MAX_MESSAGE_SIZE = 200;
+    static constexpr int MAX_MESSAGE_AMOUNT = 80; 
+
+    std::list<Message> mMessages;
     std::vector<ftxui::Element> mDisplayedMessages;
-
     std::string mTypedMessageContent;
-
+    
     ftxui::Component mSendButton;
     ftxui::Component mLeaveButton;
     ftxui::Component mTypedMessageInput;
     ftxui::Component mInputLayout;
     ftxui::Component mPageContent;
-
+    
     ftxui::Element Format(const Message& message);
+    void SendMessageHelper();
 public:
+
+    void AddMessageToList(const Message& message);
+    void ClearTypedMessageField();
+
     ChatPage(MainInterface*);
     ftxui::Component GetPageContent() override;
 };

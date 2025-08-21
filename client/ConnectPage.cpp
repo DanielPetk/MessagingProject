@@ -1,6 +1,7 @@
 
 #include "ConnectPage.h"
 
+#include <iostream>
 #include <thread>
 #include <ftxui/component/event.hpp>
 
@@ -39,9 +40,14 @@ ConnectPage::ConnectPage(MainInterface* mainInterface) : Page{mainInterface}, mC
     });
 
     mConnectButton = Button(&mConnectButtonLabel, [&] {
+        if (mConnecting || mUsernameFieldContent.empty() || mHostnameFieldContent.empty() || mPortFieldContent.empty()) { 
+           return; 
+        }
+        mMainInterface->OnConnectButtonPress(mUsernameFieldContent, mHostnameFieldContent, mPortFieldContent);
+    });
+
+    testbutton = Button("Test Chat Page", [&] {
         mMainInterface->SetAppState(2);
-        return;
-        OnConnectButtonPress();
     });
 
     mExitButton = Button("Close", [&] {
@@ -53,7 +59,8 @@ ConnectPage::ConnectPage(MainInterface* mainInterface) : Page{mainInterface}, mC
         mHostnameField,
         mPortField,
         mConnectButton,
-        mExitButton
+        mExitButton,
+        testbutton
     });
 
     mPageContent = Renderer(mInputContainer, [&] {
@@ -71,7 +78,8 @@ ConnectPage::ConnectPage(MainInterface* mainInterface) : Page{mainInterface}, mC
                                 separatorDashed(),
                                 vbox({
                                     hbox({filler(), mConnectButton->Render(), filler()}),
-                                    hbox({filler(), mExitButton->Render(), filler()})
+                                    hbox({filler(), mExitButton->Render(), filler()}),
+                                    hbox({filler(), testbutton->Render(), filler()})
                                 }) | center,
                             }) | size(WIDTH, EQUAL, 40),
                             filler() | size(WIDTH, EQUAL, 1)
@@ -81,16 +89,6 @@ ConnectPage::ConnectPage(MainInterface* mainInterface) : Page{mainInterface}, mC
             );
         
     });    
-}
-
-void ConnectPage::OnConnectButtonPress() {
-    if (mConnecting || mUsernameFieldContent.empty() || mHostnameFieldContent.empty() || mPortFieldContent.empty()) { 
-        return; 
-    }
-    SetConnecting(true);
-    if (mMainInterface) {
-        mMainInterface->GetNetworkController()->ConnectToServer(mUsernameFieldContent, mHostnameFieldContent, mPortFieldContent);
-    }
 }
 
 Component ConnectPage::GetPageContent() {

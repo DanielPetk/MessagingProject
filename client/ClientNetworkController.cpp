@@ -1,20 +1,21 @@
 #include <chrono>
+#include <iostream>
 
 #include "ClientNetworkController.h"
 #include "MainInterface.h"
 #include <shared/shared.h>
 
-#include <iostream>
 
-void ClientNetworkController::ConnectToServer(std::string username, std::string host, std::string port) {    
-    mConnectingFuture = std::async(std::launch::async, [
-        username = std::move(username),
-        host = std::move(host),
-        port = std::move(port),
-        this
-    ] {
+ClientNetworkController::~ClientNetworkController() {
+    mServerSocket.Shutdown(SD_BOTH);
+    std::cout << "Cleaning Up!";
+    if (mConnectingFuture.valid()) { mConnectingFuture.get(); }
+}
+
+void ClientNetworkController::ConnectToServer(const std::string& username, const std::string& host, const std::string& port) {    
+    mConnectingFuture = std::async(std::launch::async, [=, this] {
         if (!mInterface) { return; }
-
+        
         struct sockaddr_in server_addr;
         server_addr.sin_family = AF_INET;
         server_addr.sin_port = htons(std::stoi(port));
@@ -28,7 +29,7 @@ void ClientNetworkController::ConnectToServer(std::string username, std::string 
 
         // Create socket
         mServerSocket = Socket( AF_INET, SOCK_STREAM, 0 );
-            
+
         // Connect to server 
         if (!mServerSocket.Connect(reinterpret_cast<sockaddr*>(&server_addr), sizeof(server_addr))) {
             mServerSocket.Shutdown(SD_BOTH);
@@ -62,7 +63,7 @@ bool ClientNetworkController::ValidateServer(const std::string& username) {
         return recvRes.value();
     });
 
-    if (recvFuture.wait_for(std::chrono::seconds(1)) == std::future_status::ready) {
+    if (recvFuture.wait_for(std::chrono::milliseconds(500)) == std::future_status::ready) {
         return recvFuture.get() == SERVER_CONNECTION_ACCEPTED;
     }
 

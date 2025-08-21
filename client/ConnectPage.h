@@ -27,7 +27,7 @@ class ConnectPage : public Page {
     ftxui::Component mInputContainer;
     ftxui::Component mPageContent;
 
-    void OnConnectButtonPress();
+    ftxui::Component testbutton;
     
 public:
 

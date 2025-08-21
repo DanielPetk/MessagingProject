@@ -1,6 +1,7 @@
 #pragma once
 
 #include <mutex> 
+#include <memory>
 #include <ftxui/component/screen_interactive.hpp>
 
 #include "ChatPage.h"
@@ -20,7 +21,7 @@ class MainInterface {
     /// Callable closure to exit the UI loop
     ftxui::Closure mExit;
 
-    // Current screen being displayed and mutex for it;
+    // Current screen being displayed
     int mAppState = 0;
     
     // UI Pages
@@ -34,6 +35,9 @@ public:
     // Callbacks for different ui events that will be called from other threads
     void OnConnectionError();
     void OnConnectionSuccess();
+    void OnConnectButtonPress(const std::string& username, const std::string& host, const std::string& port);
+    void OnLeaveRoom();
+    void OnSendMessage(const std::string& message);
 
     void Run();
     void Exit() { mExit(); };

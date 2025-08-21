@@ -7,7 +7,7 @@ class MainInterface;
 class Page {
 
 protected:
-    MainInterface* mMainInterface;
+    MainInterface* mMainInterface = nullptr;
 public:
     Page(MainInterface* mainInterface) : mMainInterface{mainInterface} {}
     virtual ftxui::Component GetPageContent() = 0;    
