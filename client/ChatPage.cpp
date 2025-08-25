@@ -97,3 +97,7 @@ Component ChatPage::GetPageContent() {
 void ChatPage::ClearTypedMessageField() {
     mTypedMessageContent.clear();
 }
+
+void ChatPage::ClearMessageHistory() {
+    mMessages.clear();
+}

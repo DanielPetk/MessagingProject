@@ -7,13 +7,26 @@
 
 
 ClientNetworkController::~ClientNetworkController() {
-    mServerSocket.Shutdown(SD_BOTH);
+    ShutdownConnection();
+    mLoop = false;
     std::cout << "Cleaning Up!";
-    if (mConnectingFuture.valid()) { mConnectingFuture.get(); }
+    if (mConnectingThread.joinable()) { mConnectingThread.join(); }
+    if (mReceivingMessageThread.joinable()) {mReceivingMessageThread.join(); }
+}
+
+void ClientNetworkController::StartReceiveMessageLoop() {
+    if (!mInterface) { return; }
+
+    mReceivingMessageThread = std::jthread([=, this] {
+        while (mLoop) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(1500));
+            mInterface->OnReceivedMessage({"Shadowgamer_2453", "Testingmessage", false});
+        }
+    });
 }
 
 void ClientNetworkController::ConnectToServer(const std::string& username, const std::string& host, const std::string& port) {    
-    mConnectingFuture = std::async(std::launch::async, [=, this] {
+    mConnectingThread = std::jthread([=, this] {
         if (!mInterface) { return; }
         
         struct sockaddr_in server_addr;
@@ -32,7 +45,7 @@ void ClientNetworkController::ConnectToServer(const std::string& username, const
 
         // Connect to server 
         if (!mServerSocket.Connect(reinterpret_cast<sockaddr*>(&server_addr), sizeof(server_addr))) {
-            mServerSocket.Shutdown(SD_BOTH);
+            ShutdownConnection();
             mInterface->OnConnectionError();
             return;
         }
@@ -53,7 +66,7 @@ bool ClientNetworkController::ValidateServer(const std::string& username) {
 
     // If error or if the other side of the connection is closed
     if (!sendRes || sendRes.value() == 0) {
-        mServerSocket.Shutdown(SD_BOTH);
+        ShutdownConnection();
         return false;
     }
 
@@ -67,7 +80,7 @@ bool ClientNetworkController::ValidateServer(const std::string& username) {
         return recvFuture.get() == SERVER_CONNECTION_ACCEPTED;
     }
 
-    mServerSocket.Shutdown(SD_BOTH);
+    ShutdownConnection();
     recvFuture.wait();
     return false;
 }
@@ -76,3 +89,6 @@ void ClientNetworkController::AddInterface(std::shared_ptr<MainInterface> mainIn
     mInterface = mainInterface;
 }
 
+void ClientNetworkController::ShutdownConnection() {
+    mServerSocket.Shutdown(SD_BOTH);
+}

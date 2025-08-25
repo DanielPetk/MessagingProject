@@ -24,6 +24,9 @@ ConnectPage::ConnectPage(MainInterface* mainInterface) : Page{mainInterface}, mC
 
     mHostnameField = Input(&mHostnameFieldContent);
     mHostnameField |= CatchEvent([&](Event event) {
+         if (event.is_character()) {
+            if (mPortFieldContent.size() >= 260) { return true; } // little over max host size
+        }
         return event == Event::Return;
     });
 
@@ -47,7 +50,7 @@ ConnectPage::ConnectPage(MainInterface* mainInterface) : Page{mainInterface}, mC
     });
 
     testbutton = Button("Test Chat Page", [&] {
-        mMainInterface->SetAppState(2);
+        mMainInterface->OnConnectionSuccess();
     });
 
     mExitButton = Button("Close", [&] {
@@ -62,7 +65,7 @@ ConnectPage::ConnectPage(MainInterface* mainInterface) : Page{mainInterface}, mC
         mExitButton,
         testbutton
     });
-
+    
     mPageContent = Renderer(mInputContainer, [&] {
         return 
             center(

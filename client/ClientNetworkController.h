@@ -1,6 +1,7 @@
 #pragma once 
 
-#include <future>
+#include <atomic>
+#include <thread>
 #include <memory>
 #include <shared/socket/Socket.h>
 
@@ -19,12 +20,18 @@ class ClientNetworkController {
     Socket mServerSocket;
     std::shared_ptr<MainInterface> mInterface = nullptr;
     
-    std::future<void> mConnectingFuture;
+    std::jthread mConnectingThread;
+    std::jthread mReceivingMessageThread;
+
     bool ValidateServer(const std::string& username);    
     
+    std::atomic<bool> mLoop = true;
+
 public:
     
     ~ClientNetworkController();
     void ConnectToServer(const std::string& username, const std::string& host, const std::string& port);
     void AddInterface(std::shared_ptr<MainInterface>  mainInterface);
+    void StartReceiveMessageLoop();
+    void ShutdownConnection();
 };

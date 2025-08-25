@@ -38,6 +38,7 @@ public:
     void OnConnectButtonPress(const std::string& username, const std::string& host, const std::string& port);
     void OnLeaveRoom();
     void OnSendMessage(const std::string& message);
+    void OnReceivedMessage(const Message& message);
 
     void Run();
     void Exit() { mExit(); };

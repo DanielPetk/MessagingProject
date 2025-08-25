@@ -29,6 +29,7 @@ public:
 
     void AddMessageToList(const Message& message);
     void ClearTypedMessageField();
+    void ClearMessageHistory();
 
     ChatPage(MainInterface*);
     ftxui::Component GetPageContent() override;

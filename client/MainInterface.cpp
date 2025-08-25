@@ -41,7 +41,7 @@ void MainInterface::Run() {
 
 // Called from other threads
 void MainInterface::OnConnectionError() {
-    mScreen.Post([&] {
+    mScreen.Post([this] {
         mConnectPage.SetConnecting(false);
         SetAppState(1);
     });
@@ -49,9 +49,18 @@ void MainInterface::OnConnectionError() {
 }
 
 void MainInterface::OnConnectionSuccess() {
-    mScreen.Post([&] {
+    mScreen.Post([this] {
         mConnectPage.SetConnecting(false);
+        mChatPage.ClearMessageHistory();
+        mNetworkController->StartReceiveMessageLoop();
         SetAppState(2);
+    });
+    mScreen.RequestAnimationFrame();
+}
+
+void MainInterface::OnReceivedMessage(const Message& message) {
+    mScreen.Post([message, this] {
+        mChatPage.AddMessageToList(message);
     });
     mScreen.RequestAnimationFrame();
 }
