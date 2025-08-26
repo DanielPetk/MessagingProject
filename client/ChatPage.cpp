@@ -1,6 +1,7 @@
 #include <format>
 #include <ranges>
 #include <iostream>
+#include <shared/shared.h>
 
 #include "ChatPage.h"
 #include "MainInterface.h"
@@ -26,6 +27,8 @@ ChatPage::ChatPage(MainInterface* mainInterface) : Page(mainInterface) {
     mTypedMessageInput |= CatchEvent([&](Event event) {
         if (event.is_character()) {
             if (mTypedMessageContent.size() >= ChatPage::MAX_MESSAGE_SIZE) { return true; } // max message size
+            char c = event.character()[0];
+            if (!(std::iswprint(c) && c != DELIM.at(0) && c != ENDM.at(0) && c != VALUE_SEPARATOR.at(0))) { return true; }
         }
         if (event == Event::Return) { 
             SendMessageHelper();
