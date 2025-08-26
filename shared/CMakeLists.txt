@@ -1,5 +1,6 @@
 add_library(shared STATIC 
     src/Socket.cpp
+    src/ProtocolHandler.cpp
 )
 
 target_link_libraries(shared PRIVATE

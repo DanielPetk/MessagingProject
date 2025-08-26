@@ -1,6 +1,7 @@
 #include <iostream>
 #include <sstream>
 #include <shared/shared.h>
+#include <shared/protocol/ProtocolHandler.h>
 #include <chrono>
 #include "ServerApp.h"
 #include <vector>
@@ -37,6 +38,9 @@ void ServerApp::AcceptClients() {
     socklen_t clientSockAddrSize = sizeof(clientSockAddr);
 
     while (mRunning) {     
+        
+        ProtocolHandler handler;
+
         auto clientOpt = mServerSocket.Accept(reinterpret_cast<sockaddr*>(&clientSockAddr), &clientSockAddrSize);
         if (!clientOpt) {continue;}
 
@@ -46,21 +50,19 @@ void ServerApp::AcceptClients() {
         if (!resOpt) {continue;}
 
         std::string validationMessage = resOpt.value();
-        size_t delimPos = validationMessage.find(DELIM);
-        if (delimPos == std::string::npos) {
-            continue;
+        std::cout << validationMessage;
+        auto parsed = handler.ParseProtocolString(validationMessage);
+        std::cout << "\n";
+        std::cout << "SIZE" << " " << parsed.size() << std::endl;
+        for (const auto& pair : parsed) {
+            std::cout << pair.first << " : " << pair.second << "\n";
         }
 
-        std::string appIdentifier = validationMessage.substr(0,delimPos);
-        std::string username = validationMessage.substr(delimPos+1);
-        
-        std::cout << "VALIDATE: " << appIdentifier << " USERNAME: " << username;
-
-        if (appIdentifier == APP_IDENTIFIER) {
-            clientSocket.Send(SERVER_CONNECTION_ACCEPTED);
+        if (((parsed.contains(TYPE)) && (parsed[TYPE] == VALIDATE) && (parsed.contains(MESSAGE)) && (parsed[MESSAGE] == APP_IDENTIFIER))) {
+            clientSocket.Send(handler.CreateProtocolString({{TYPE, VALIDATE}, {MESSAGE, SERVER_CONNECTION_ACCEPTED}}));
         }
         else {
-            clientSocket.Send(SERVER_CONNECTION_DECLINED);
+            clientSocket.Send(handler.CreateProtocolString({{TYPE, VALIDATE}, {MESSAGE, SERVER_CONNECTION_DECLINED}}));
         }
     }
     

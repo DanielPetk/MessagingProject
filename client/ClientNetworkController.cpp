@@ -4,6 +4,7 @@
 #include "ClientNetworkController.h"
 #include "MainInterface.h"
 #include <shared/shared.h>
+#include <shared/protocol/ProtocolHandler.h>
 
 
 ClientNetworkController::~ClientNetworkController() {
@@ -20,7 +21,7 @@ void ClientNetworkController::StartReceiveMessageLoop() {
     mReceivingMessageThread = std::jthread([=, this] {
         while (mLoop) {
             std::this_thread::sleep_for(std::chrono::milliseconds(1500));
-            mInterface->OnReceivedMessage({"Shadowgamer_2453", "Testingmessage", false});
+            mInterface->OnReceivedMessage({"TestUser", "Test message", false});
         }
     });
 }
@@ -61,7 +62,8 @@ void ClientNetworkController::ConnectToServer(const std::string& username, const
 }
 
 bool ClientNetworkController::ValidateServer(const std::string& username) {
-    std::string validationMessage = APP_IDENTIFIER + DELIM + username;
+    ProtocolHandler handler;        
+    std::string validationMessage = handler.CreateProtocolString({{TYPE, VALIDATE}, {MESSAGE, APP_IDENTIFIER}, {USERNAME, username}});
     auto sendRes = mServerSocket.Send(validationMessage, 0);
 
     // If error or if the other side of the connection is closed
@@ -77,7 +79,8 @@ bool ClientNetworkController::ValidateServer(const std::string& username) {
     });
 
     if (recvFuture.wait_for(std::chrono::milliseconds(500)) == std::future_status::ready) {
-        return recvFuture.get() == SERVER_CONNECTION_ACCEPTED;
+        auto parsed = handler.ParseProtocolString(recvFuture.get());
+        return ((parsed.contains(TYPE)) && (parsed[TYPE] == VALIDATE) && (parsed.contains(MESSAGE)) && (parsed[MESSAGE] == SERVER_CONNECTION_ACCEPTED));
     }
 
     ShutdownConnection();
