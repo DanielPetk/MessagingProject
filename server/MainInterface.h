@@ -20,6 +20,10 @@ class MainInterface {
     LogPage mLogPage;
 
 public:
+
+    // Called from UI thread
+    void OnCommandEnter(const std::string& command);
+
     MainInterface(ServerNetworkController* networkController);
     void Run();
     void Exit();

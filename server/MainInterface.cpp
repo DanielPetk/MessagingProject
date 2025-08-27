@@ -4,8 +4,12 @@
 
 using namespace ftxui;
 
-MainInterface::MainInterface(ServerNetworkController* networkController) : mScreen{ScreenInteractive::FitComponent()}, mLogPage{this}, mExit{mScreen.ExitLoopClosure()} {
+MainInterface::MainInterface(ServerNetworkController* networkController) : mScreen{ScreenInteractive::TerminalOutput()}, mLogPage{this}, mExit{mScreen.ExitLoopClosure()} {
 
+}
+
+void MainInterface::OnCommandEnter(const std::string& command) {
+    mLogPage.ClearedTypedCommandField();
 }
 
 void MainInterface::Run() {
