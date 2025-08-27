@@ -31,7 +31,7 @@ public:
     
     ~ClientNetworkController();
     void ConnectToServer(const std::string& username, const std::string& host, const std::string& port);
-    void AddInterface(std::shared_ptr<MainInterface>  mainInterface);
+    void AddInterface(std::shared_ptr<MainInterface> mainInterface);
     void StartReceiveMessageLoop();
     void ShutdownConnection();
 };

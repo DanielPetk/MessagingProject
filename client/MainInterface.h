@@ -43,7 +43,4 @@ public:
     void Run();
     void Exit() { mExit(); };
     void SetAppState(int appState) { mAppState = appState; };
-    ClientNetworkController* GetNetworkController() { return mNetworkController; }
-    ftxui::ScreenInteractive& GetScreen() { return mScreen; };
-
 };
