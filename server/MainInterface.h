@@ -32,11 +32,13 @@ class MainInterface {
     // UI LOG PAGE
     LogPage mLogPage;
 
-    std::string GetCommandBase(std::string command);
-
+    std::string GetCommandBase(const std::string& command);
+    std::vector<std::string> ParseCommandArguments(const std::string& command);
     void OnHelpCommand();
     void OnExitCommand();
     void OnClearCommand();
+    void OnSetPortCommand(const std::string& command);
+
 public:
 
     // Called from UI thread

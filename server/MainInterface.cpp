@@ -24,6 +24,8 @@ void MainInterface::OnCommandEnter(const std::string& command) {
     } 
     else if (commandBase == "clear") {
         OnClearCommand();
+    } else if (commandBase == "setport") {
+
     }
 
     else {
@@ -36,7 +38,7 @@ void MainInterface::OnCommandEnter(const std::string& command) {
 void MainInterface::OnHelpCommand() {
     mLogPage.AddLogToList({LogType::Info, 
     "help - Display this page.\n"
-    "setport - Set the port number to run the server on\n"
+    "setport {port#} - Set the port number to run the server on\n"
     "start - Start the server with the current configuration.\n"
     "stop - Stop the server.\n"
     "clear - Clear all previous logs\n"
@@ -53,9 +55,24 @@ void MainInterface::OnClearCommand() {
     mLogPage.ClearLogList();
 }
 
-std::string MainInterface::GetCommandBase(std::string command) {
-    std::transform(command.begin(), command.end(), command.begin(), [](unsigned char c) {return std::tolower(c); });
+void MainInterface::OnSetPortCommand(const std::string& command) {
+    auto parsedCommand = ParseCommandArguments(command);
+}
+
+std::vector<std::string> MainInterface::ParseCommandArguments(const std::string& command) {
     std::istringstream ss{command};
+    std::vector<std::string> commands;
+    std::string argument;
+    while (ss >> argument) {
+        commands.push_back(argument);
+    }
+    return commands;
+}
+
+std::string MainInterface::GetCommandBase(const std::string& command) {
+    std::string commandcopy = command;
+    std::transform(commandcopy.begin(), commandcopy.end(), commandcopy.begin(), [](unsigned char c) {return std::tolower(c); });
+    std::istringstream ss{commandcopy};
     std::string first;
     ss >> first;
     return first;
