@@ -5,6 +5,19 @@
 
 #include <ftxui/component/screen_interactive.hpp>
 
+enum class LogType {
+    UserCommand,
+    Info,
+    Alert,
+    Error
+};
+
+struct LogEntry {
+    LogEntry(LogType type, const std::string& message) : mType{type}, mMessage{message} {}
+    LogType mType;
+    std::string mMessage;
+};
+
 class MainInterface {
 
     // The server's network controller to call ui stuff on
@@ -19,6 +32,11 @@ class MainInterface {
     // UI LOG PAGE
     LogPage mLogPage;
 
+    std::string GetCommandBase(std::string command);
+
+    void OnHelpCommand();
+    void OnExitCommand();
+    void OnClearCommand();
 public:
 
     // Called from UI thread
@@ -26,5 +44,5 @@ public:
 
     MainInterface(ServerNetworkController* networkController);
     void Run();
-    void Exit();
+    void Exit() { mExit(); };
 };
