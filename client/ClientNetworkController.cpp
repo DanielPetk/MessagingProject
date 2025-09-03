@@ -46,7 +46,6 @@ void ClientNetworkController::ConnectToServer(const std::string& username, const
 
         // Connect to server 
         if (!mServerSocket.Connect(reinterpret_cast<sockaddr*>(&server_addr), sizeof(server_addr))) {
-            ShutdownConnection();
             mInterface->OnConnectionError();
             return;
         }

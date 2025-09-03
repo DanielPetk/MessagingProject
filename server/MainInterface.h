@@ -19,7 +19,7 @@ struct LogEntry {
 };
 
 class MainInterface {
-
+    
     // The server's network controller to call ui stuff on
     ServerNetworkController* mNetworkController = nullptr;
 
@@ -38,6 +38,7 @@ class MainInterface {
     void OnExitCommand();
     void OnClearCommand();
     void OnSetPortCommand(const std::string& command);
+    void OnStartCommand();
 
 public:
 

@@ -51,9 +51,9 @@ Element LogPage::Format(const LogEntry& entry) {
         Element maybefiller = mDisplayedLogs.size() ? filler() | size(HEIGHT, EQUAL, 1) : filler() | size(HEIGHT, EQUAL, 0);
 
         return vbox({
-            maybefiller,
-            text(entry.mMessage),
-            text("")
+            // maybefiller,
+            paragraph(entry.mMessage),
+            // text("")
         });
     }
 
