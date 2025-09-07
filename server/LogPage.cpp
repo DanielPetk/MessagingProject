@@ -51,9 +51,9 @@ Element LogPage::Format(const LogEntry& entry) {
         Element maybefiller = mDisplayedLogs.size() ? filler() | size(HEIGHT, EQUAL, 1) : filler() | size(HEIGHT, EQUAL, 0);
 
         return vbox({
-            // maybefiller,
+            maybefiller,
             paragraph(entry.mMessage),
-            // text("")
+            text("")
         });
     }
 
@@ -61,10 +61,10 @@ Element LogPage::Format(const LogEntry& entry) {
     Color logtypecolor = Color::Black;
     if (entry.mType == LogType::Info) {
         type = "INFO";
-        logtypecolor = Color::Green3;
+        logtypecolor = Color::Blue1;
     } else if (entry.mType == LogType::Alert) {
         type = "ALERT";
-        logtypecolor = Color::Purple3;
+        logtypecolor = Color::Green3;
     } else if (entry.mType == LogType::Error) {
         type = "ERROR";
         logtypecolor = Color::Red1;

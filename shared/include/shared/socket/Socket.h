@@ -23,6 +23,7 @@ public:
 
     ~Socket();
    
+    std::expected<void, int> SetSendTimeout(int timeout);
     std::expected<void, int> Close();
     std::expected<void, int> Connect(const struct sockaddr* addr, socklen_t addrlen);
     std::expected<void, int> Bind(const struct sockaddr* addr, socklen_t addrlen);

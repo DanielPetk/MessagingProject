@@ -46,6 +46,12 @@ int Socket::GetLastError() {
     return WSAGetLastError();
 }
 
+std::expected<void, int> Socket::SetSendTimeout(int timeout) {
+    if (setsockopt(mSocket, SOL_SOCKET, SO_SNDTIMEO, reinterpret_cast<const char*>(&timeout), sizeof(timeout)) == SOCKET_ERROR) {
+        return std::unexpected{GetLastError()};
+    }
+    return {};
+}
 
 std::expected<void, int> Socket::Close() {
     if (IsValid() && closesocket(mSocket) == SOCKET_ERROR) {

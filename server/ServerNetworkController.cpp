@@ -31,18 +31,15 @@ std::optional<std::string> ServerNetworkController::StartListening() {
     
     sockaddr_in clientSockAddr;
     socklen_t clientSockAddrSize = sizeof(clientSockAddr);
- 
-    auto a = std::thread([&] {
-        std::this_thread::sleep_for(std::chrono::seconds(2));
-        std::cout << "EHJFLKSHJEL:F";
-        mServerSocket.Shutdown(SD_BOTH);
-        //std::terminate();
-    });
- 
-    auto clientOpt = mServerSocket.Accept(reinterpret_cast<sockaddr*>(&clientSockAddr), &clientSockAddrSize);
 
-    a.join();
-
-    // more shit here to accept
+    AcceptClients();
     return hostname;
+}
+
+void ServerNetworkController::AcceptClients() {
+    if (!mInterface) { return; }
+
+    mAcceptThread = std::jthread{[&] {
+        
+    }};
 }

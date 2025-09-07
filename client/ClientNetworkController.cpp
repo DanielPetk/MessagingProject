@@ -27,9 +27,9 @@ void ClientNetworkController::StartReceiveMessageLoop() {
 }
 
 void ClientNetworkController::ConnectToServer(const std::string& username, const std::string& host, const std::string& port) {    
-    mConnectingThread = std::jthread([=, this] {
-        if (!mInterface) { return; }
-        
+    if (!mInterface) { return; }
+
+    mConnectingThread = std::jthread([=, this] {    
         struct sockaddr_in server_addr;
         server_addr.sin_family = AF_INET;
         server_addr.sin_port = htons(std::stoi(port));
@@ -43,6 +43,12 @@ void ClientNetworkController::ConnectToServer(const std::string& username, const
 
         // Create socket
         mServerSocket = Socket( AF_INET, SOCK_STREAM, 0 );
+
+        if (!mServerSocket.SetSendTimeout(2500)) {
+            ShutdownConnection();
+            mInterface->OnConnectionError();
+            return;
+        }
 
         // Connect to server 
         if (!mServerSocket.Connect(reinterpret_cast<sockaddr*>(&server_addr), sizeof(server_addr))) {
@@ -77,11 +83,10 @@ bool ClientNetworkController::ValidateServer(const std::string& username) {
         return recvRes.value();
     });
 
-    if (recvFuture.wait_for(std::chrono::milliseconds(500)) == std::future_status::ready) {
+    if (recvFuture.wait_for(std::chrono::milliseconds(2500)) == std::future_status::ready) {
         auto parsed = handler.ParseProtocolString(recvFuture.get());
         return ((parsed.contains(TYPE)) && (parsed[TYPE] == VALIDATE) && (parsed.contains(MESSAGE)) && (parsed[MESSAGE] == SERVER_CONNECTION_ACCEPTED));
     }
-
     ShutdownConnection();
     recvFuture.wait();
     return false;
@@ -92,5 +97,5 @@ void ClientNetworkController::AddInterface(std::shared_ptr<MainInterface> mainIn
 }
 
 void ClientNetworkController::ShutdownConnection() {
-    mServerSocket.Shutdown(SD_BOTH);
+    mServerSocket.Close();
 }
