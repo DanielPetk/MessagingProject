@@ -3,6 +3,7 @@
 #include <atomic>
 #include <optional>
 #include <memory>
+#include <thread>
 
 #include <shared/socket/Socket.h>
 

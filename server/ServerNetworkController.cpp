@@ -1,6 +1,12 @@
 #include "ServerNetworkController.h"
-#include <thread>
+
+#include <future>
 #include <iostream>
+
+#include <shared/protocol/ProtocolHandler.h>
+#include <shared/shared.h>
+#include "MainInterface.h"
+
 constexpr int HOST_BUFFER_SIZE = 1024;
 
 std::optional<std::string> ServerNetworkController::StartListening() {
@@ -37,9 +43,46 @@ std::optional<std::string> ServerNetworkController::StartListening() {
 }
 
 void ServerNetworkController::AcceptClients() {
-    if (!mInterface) { return; }
-
+    if (!mInterface || mLoopAccept) { return; }
+    mLoopAccept = true;
     mAcceptThread = std::jthread{[&] {
         
+        sockaddr_in clientSockAddr;
+        socklen_t clientSockAddrSize = sizeof(clientSockAddr);
+        ProtocolHandler handler;
+
+        while (mLoopAccept) {
+            auto clientOpt = mServerSocket.Accept(reinterpret_cast<sockaddr*>(&clientSockAddr), &clientSockAddrSize);
+            if (!clientOpt) {continue;}
+
+            Socket clientSocket = std::move(clientOpt.value());
+            std::future<std::string> recvFuture = std::async(std::launch::async, [&]() {
+                auto recvRes = clientSocket.Recv();
+                if (!recvRes) return std::string{};
+                return recvRes.value();
+            });
+
+            if (recvFuture.wait_for(std::chrono::milliseconds(2500)) == std::future_status::ready) {
+                auto parsed = handler.ParseProtocolString(recvFuture.get());
+                std::expected<int, int> sendRes;
+                if (((parsed.contains(TYPE)) && (parsed[TYPE] == VALIDATE) && (parsed.contains(MESSAGE)) && (parsed[MESSAGE] == APP_IDENTIFIER))) {
+                    sendRes = clientSocket.Send(handler.CreateProtocolString({{TYPE, VALIDATE}, {MESSAGE, SERVER_CONNECTION_ACCEPTED}}));
+                    if (!sendRes || sendRes.value() == 0) {
+                        continue;
+                    }
+
+                    
+                    // HERE WE ADD TO THE LIST OF SOCKETS
+                }
+                else {
+                    sendRes = clientSocket.Send(handler.CreateProtocolString({{TYPE, VALIDATE}, {MESSAGE, SERVER_CONNECTION_DECLINED}}));
+                }
+            }
+            else {
+                // Timeout
+                clientSocket.Close();
+                recvFuture.wait();
+            }
+        }
     }};
 }
