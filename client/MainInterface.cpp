@@ -76,6 +76,7 @@ void MainInterface::OnConnectButtonPress(const std::string& username, const std:
 }
 
 void MainInterface::OnSendMessage(const std::string& message) { 
+    bool res = mNetworkController->SendMessage(message);
     mChatPage.AddMessageToList({"You", message, true});
     mChatPage.ClearTypedMessageField();
 }

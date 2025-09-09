@@ -26,6 +26,11 @@ void ClientNetworkController::StartReceiveMessageLoop() {
     });
 }
 
+bool ClientNetworkController::SendMessage(const std::string& message) {
+    auto sendRes = mServerSocket.Send(message);
+    return !(!sendRes || sendRes.value() == 0);
+}
+
 void ClientNetworkController::ConnectToServer(const std::string& username, const std::string& host, const std::string& port) {    
     if (!mInterface) { return; }
 
