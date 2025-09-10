@@ -72,7 +72,7 @@ void ServerNetworkController::AcceptClients() {
                         continue;
                     }
 
-                    
+                    std::this_thread::sleep_for(std::chrono::seconds(5));
                     // HERE WE ADD TO THE LIST OF SOCKETS
                 }
                 else {

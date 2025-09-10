@@ -35,6 +35,9 @@ public:
     // Callbacks for different ui events that will be called from other threads
     void OnConnectionError();
     void OnConnectionSuccess();
+    void OnLoopError();
+
+    // Called from UI Threads
     void OnConnectButtonPress(const std::string& username, const std::string& host, const std::string& port);
     void OnLeaveRoom();
     void OnSendMessage(const std::string& message);

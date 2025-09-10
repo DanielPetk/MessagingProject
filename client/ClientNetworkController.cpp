@@ -8,21 +8,22 @@
 
 
 ClientNetworkController::~ClientNetworkController() {
-    mServerSocket.Close();
-    mLoopRecv = false;
-    std::cout << "Cleaning Up!";
-    if (mConnectingThread.joinable()) { mConnectingThread.join(); }
-    if (mReceivingMessageThread.joinable()) {mReceivingMessageThread.join(); }
+    CloseServerConnection();
 }
 
 void ClientNetworkController::StartReceiveMessageLoop() {
     if (!mInterface || mLoopRecv) { return; }
     mLoopRecv = true;
-    
+    ProtocolHandler handler;
+
     mReceivingMessageThread = std::jthread([=, this] {
         while (mLoopRecv) {
-            std::this_thread::sleep_for(std::chrono::milliseconds(1500));
-            mInterface->OnReceivedMessage({"TestUser", "Test message"});
+            auto recvRes = mServerSocket.Recv();
+            if (!recvRes || recvRes.value() == "") {
+                mInterface->OnLoopError();
+            }
+
+            mInterface->OnReceivedMessage({"PENIS", "ASS"});
         }
     });
 }
@@ -69,7 +70,12 @@ void ClientNetworkController::ConnectToServer(const std::string& username, const
 }
 
 void ClientNetworkController::CloseServerConnection() {
-
+    std::lock_guard<std::mutex> m{mCleanupMutex};
+    mServerSocket.Close();
+    mLoopRecv = false;
+    if (mConnectingThread.joinable()) { mConnectingThread.join(); }
+    if (mReceivingMessageThread.joinable()) {mReceivingMessageThread.join(); }
+    mRunning = false;
 }
 
 bool ClientNetworkController::SendServerMessage(const std::string& message) {

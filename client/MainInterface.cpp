@@ -59,6 +59,15 @@ void MainInterface::OnConnectionSuccess() {
     mScreen.RequestAnimationFrame();
 }
 
+void MainInterface::OnLoopError() {
+    mScreen.Post([this] {
+        mNetworkController->CloseServerConnection();
+        SetAppState(1);
+    });
+    mScreen.RequestAnimationFrame();
+}
+
+
 void MainInterface::OnReceivedMessage(const Message& message) {
     mScreen.Post([message, this] {
         mChatPage.AddMessageToList(message);
@@ -67,6 +76,7 @@ void MainInterface::OnReceivedMessage(const Message& message) {
 }
 
 void MainInterface::OnLeaveRoom() {
+    mNetworkController->CloseServerConnection();
     SetAppState(0);
 }
 

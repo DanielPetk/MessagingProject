@@ -3,6 +3,8 @@
 #include <atomic>
 #include <thread>
 #include <memory>
+#include <mutex>
+
 #include <shared/socket/Socket.h>
 
 class MainInterface;
@@ -38,7 +40,8 @@ private:
     Socket mServerSocket;
     std::shared_ptr<MainInterface> mInterface = nullptr;
     std::string mUsername;
-    
+
+    std::mutex mCleanupMutex;
     std::atomic<bool> mLoopRecv = false;
     std::atomic<bool> mRunning = false;
     
