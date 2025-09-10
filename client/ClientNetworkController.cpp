@@ -8,7 +8,7 @@
 
 
 ClientNetworkController::~ClientNetworkController() {
-    ShutdownConnection();
+    mServerSocket.Close();
     mLoopRecv = false;
     std::cout << "Cleaning Up!";
     if (mConnectingThread.joinable()) { mConnectingThread.join(); }
@@ -27,13 +27,9 @@ void ClientNetworkController::StartReceiveMessageLoop() {
     });
 }
 
-bool ClientNetworkController::SendServerMessage(const std::string& message) {
-    auto sendRes = mServerSocket.Send(message);
-    return !(!sendRes || sendRes.value() == 0);
-}
-
 void ClientNetworkController::ConnectToServer(const std::string& username, const std::string& host, const std::string& port) {    
-    if (!mInterface) { return; }
+    if (!mInterface || mRunning) { return; }
+    mRunning = true;
 
     mConnectingThread = std::jthread([=, this] {    
         struct sockaddr_in server_addr;
@@ -46,22 +42,22 @@ void ClientNetworkController::ConnectToServer(const std::string& username, const
             return;
         }
         memcpy(&server_addr.sin_addr, he->h_addr, he->h_length);
-
+        
         // Create socket
         mServerSocket = Socket( AF_INET, SOCK_STREAM, 0 );
-
+        
         if (!mServerSocket.SetSendTimeout(2500)) {
-            ShutdownConnection();
+            mServerSocket.Close();
             mInterface->OnConnectionError();
             return;
         }
-
+        
         // Connect to server 
         if (!mServerSocket.Connect(reinterpret_cast<sockaddr*>(&server_addr), sizeof(server_addr))) {
             mInterface->OnConnectionError();
             return;
         }
-
+        
         if(ValidateServer(username)) {
             mUsername = username;
             mInterface->OnConnectionSuccess();
@@ -69,18 +65,26 @@ void ClientNetworkController::ConnectToServer(const std::string& username, const
         else {
             mInterface->OnConnectionError();
         }
-    });
+    });   
+}
 
+void ClientNetworkController::CloseServerConnection() {
+
+}
+
+bool ClientNetworkController::SendServerMessage(const std::string& message) {
+    auto sendRes = mServerSocket.Send(message);
+    return !(!sendRes || sendRes.value() == 0);
 }
 
 bool ClientNetworkController::ValidateServer(const std::string& username) {
     ProtocolHandler handler;        
     std::string validationMessage = handler.CreateProtocolString({{TYPE, VALIDATE}, {MESSAGE, APP_IDENTIFIER}, {USERNAME, username}});
     auto sendRes = mServerSocket.Send(validationMessage, 0);
-
+    
     // If error or if the other side of the connection is closed
     if (!sendRes || sendRes.value() == 0) {
-        ShutdownConnection();
+        mServerSocket.Close();
         return false;
     }
 
@@ -94,15 +98,11 @@ bool ClientNetworkController::ValidateServer(const std::string& username) {
         auto parsed = handler.ParseProtocolString(recvFuture.get());
         return ((parsed.contains(TYPE)) && (parsed[TYPE] == VALIDATE) && (parsed.contains(MESSAGE)) && (parsed[MESSAGE] == SERVER_CONNECTION_ACCEPTED));
     }
-    ShutdownConnection();
+    mServerSocket.Close();
     recvFuture.wait();
     return false;
 }
 
 void ClientNetworkController::AddInterface(std::shared_ptr<MainInterface> mainInterface) {
     mInterface = mainInterface;
-}
-
-void ClientNetworkController::ShutdownConnection() {
-    mServerSocket.Close();
 }

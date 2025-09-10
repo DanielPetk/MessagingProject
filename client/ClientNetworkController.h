@@ -1,4 +1,4 @@
-#pragma once 
+#pragma once
 
 #include <atomic>
 #include <thread>
@@ -30,9 +30,9 @@ public:
     void AddInterface(std::shared_ptr<MainInterface> mainInterface);
     void StartReceiveMessageLoop();
     bool SendServerMessage(const std::string& message);
+    void CloseServerConnection();
 
-    void ShutdownConnection();
-
+    void SetRunning(bool running) { mRunning = running; }
 private:
 
     Socket mServerSocket;
@@ -40,7 +40,8 @@ private:
     std::string mUsername;
     
     std::atomic<bool> mLoopRecv = false;
-
+    std::atomic<bool> mRunning = false;
+    
     std::jthread mConnectingThread;
     std::jthread mReceivingMessageThread;
 

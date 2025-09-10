@@ -43,6 +43,7 @@ void MainInterface::Run() {
 void MainInterface::OnConnectionError() {
     mScreen.Post([this] {
         mConnectPage.SetConnecting(false);
+        mNetworkController->SetRunning(false);
         SetAppState(1);
     });
     mScreen.RequestAnimationFrame();
