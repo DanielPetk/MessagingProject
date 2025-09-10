@@ -75,8 +75,10 @@ ChatPage::ChatPage(MainInterface* mainInterface) : Page(mainInterface) {
 
 Element ChatPage::Format(const Message& message) {
     Element messageElem = paragraph(std::format("[{}] {}", message.mUsername, message.mMessage));
-    if (message.mSentByThisClient) {
+    if (message.mMessageType == MessageType::Sent) {
         messageElem |= color(Color::Yellow1);
+    } else if (message.mMessageType == MessageType::Error) {
+        messageElem |= color(Color::Red1);
     }
     return messageElem;
 }

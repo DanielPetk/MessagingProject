@@ -9,24 +9,25 @@
 
 ClientNetworkController::~ClientNetworkController() {
     ShutdownConnection();
-    mLoop = false;
+    mLoopRecv = false;
     std::cout << "Cleaning Up!";
     if (mConnectingThread.joinable()) { mConnectingThread.join(); }
     if (mReceivingMessageThread.joinable()) {mReceivingMessageThread.join(); }
 }
 
 void ClientNetworkController::StartReceiveMessageLoop() {
-    if (!mInterface) { return; }
-
+    if (!mInterface || mLoopRecv) { return; }
+    mLoopRecv = true;
+    
     mReceivingMessageThread = std::jthread([=, this] {
-        while (mLoop) {
+        while (mLoopRecv) {
             std::this_thread::sleep_for(std::chrono::milliseconds(1500));
-            mInterface->OnReceivedMessage({"TestUser", "Test message", false});
+            mInterface->OnReceivedMessage({"TestUser", "Test message"});
         }
     });
 }
 
-bool ClientNetworkController::SendMessage(const std::string& message) {
+bool ClientNetworkController::SendServerMessage(const std::string& message) {
     auto sendRes = mServerSocket.Send(message);
     return !(!sendRes || sendRes.value() == 0);
 }
@@ -62,6 +63,7 @@ void ClientNetworkController::ConnectToServer(const std::string& username, const
         }
 
         if(ValidateServer(username)) {
+            mUsername = username;
             mInterface->OnConnectionSuccess();
         }
         else {

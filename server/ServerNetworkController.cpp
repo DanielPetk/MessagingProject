@@ -56,6 +56,7 @@ void ServerNetworkController::AcceptClients() {
             if (!clientOpt) {continue;}
 
             Socket clientSocket = std::move(clientOpt.value());
+
             std::future<std::string> recvFuture = std::async(std::launch::async, [&]() {
                 auto recvRes = clientSocket.Recv();
                 if (!recvRes) return std::string{};
@@ -65,7 +66,7 @@ void ServerNetworkController::AcceptClients() {
             if (recvFuture.wait_for(std::chrono::milliseconds(2500)) == std::future_status::ready) {
                 auto parsed = handler.ParseProtocolString(recvFuture.get());
                 std::expected<int, int> sendRes;
-                if (((parsed.contains(TYPE)) && (parsed[TYPE] == VALIDATE) && (parsed.contains(MESSAGE)) && (parsed[MESSAGE] == APP_IDENTIFIER))) {
+                if (((parsed.contains(TYPE)) && (parsed[TYPE] == VALIDATE) && (parsed.contains(MESSAGE)) && (parsed[MESSAGE] == APP_IDENTIFIER) && (parsed.contains(USERNAME)))) {
                     sendRes = clientSocket.Send(handler.CreateProtocolString({{TYPE, VALIDATE}, {MESSAGE, SERVER_CONNECTION_ACCEPTED}}));
                     if (!sendRes || sendRes.value() == 0) {
                         continue;

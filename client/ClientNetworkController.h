@@ -7,12 +7,18 @@
 
 class MainInterface;
 
+enum class MessageType {
+    Received,
+    Sent,
+    Error
+};
+
 struct Message {
     Message(const std::string& username, const std::string& message) : mUsername{username}, mMessage{message} {}
-    Message(const std::string& username, const std::string& message, bool sentByThisClient) : mUsername{username}, mMessage{message}, mSentByThisClient{sentByThisClient} {}
+    Message(const std::string& username, const std::string& message, MessageType messageType) : mUsername{username}, mMessage{message}, mMessageType{messageType} {}
     std::string mUsername;
     std::string mMessage;
-    bool mSentByThisClient = false;
+    MessageType mMessageType = MessageType::Received;
 };
 
 class ClientNetworkController {
@@ -23,7 +29,7 @@ public:
     void ConnectToServer(const std::string& username, const std::string& host, const std::string& port);
     void AddInterface(std::shared_ptr<MainInterface> mainInterface);
     void StartReceiveMessageLoop();
-    bool SendMessage(const std::string& message);
+    bool SendServerMessage(const std::string& message);
 
     void ShutdownConnection();
 
@@ -31,8 +37,10 @@ private:
 
     Socket mServerSocket;
     std::shared_ptr<MainInterface> mInterface = nullptr;
-    std::atomic<bool> mLoop = true;
+    std::string mUsername;
     
+    std::atomic<bool> mLoopRecv = false;
+
     std::jthread mConnectingThread;
     std::jthread mReceivingMessageThread;
 
