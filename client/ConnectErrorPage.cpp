@@ -10,19 +10,25 @@ ConnectErrorPage::ConnectErrorPage(MainInterface* mainInterface, const std::stri
         mMainInterface->SetAppState(0);        
     });
 
-    mPageContent = Renderer(mOkayButton, [&] {
-        return window(text("Connection Error"),
+    mPageContent = Renderer(mOkayButton, [&, errorMessage] {
+        return
             center(
-                hcenter(
-                    vbox({
-                        separatorEmpty(),
-                        paragraph(errorMessage),
-                        separatorEmpty(),
-                        hbox({filler(), mOkayButton->Render(), filler()})
-                    })
-                )
-            )
-        );
+                hcenter({
+                    window(text("Error"), 
+                        hbox({
+                            filler() | size(WIDTH, EQUAL, 1),
+                            vbox({
+                                separatorEmpty(),
+                                paragraph(errorMessage) | center,
+                                separatorEmpty(),
+                                hbox({filler(), mOkayButton->Render(), filler()})
+                            }) | size(WIDTH, EQUAL, 40),
+                            filler() | size(WIDTH, EQUAL, 1)
+                        })
+                    )
+                })
+            );
+        
     });
 }
 

@@ -8,7 +8,7 @@
 
 
 ClientNetworkController::~ClientNetworkController() {
-    CloseServerConnection();
+    CloseServerConnection(true);
 }
 
 void ClientNetworkController::StartReceiveMessageLoop() {
@@ -20,7 +20,9 @@ void ClientNetworkController::StartReceiveMessageLoop() {
         while (mLoopRecv) {
             auto recvRes = mServerSocket.Recv();
             if (!recvRes || recvRes.value() == "") {
-                mInterface->OnLoopError();
+                if (mShowLoopError) {
+                    mInterface->OnLoopError();
+                }
                 return;
             }
 
@@ -70,12 +72,16 @@ void ClientNetworkController::ConnectToServer(const std::string& username, const
     });   
 }
 
-void ClientNetworkController::CloseServerConnection() {
+void ClientNetworkController::CloseServerConnection(bool suppressErrors) {
+    if (suppressErrors) {
+        mShowLoopError = false;
+    }
     std::lock_guard<std::mutex> m{mCleanupMutex};
     mServerSocket.Close();
     mLoopRecv = false;
     if (mConnectingThread.joinable()) { mConnectingThread.join(); }
     if (mReceivingMessageThread.joinable()) {mReceivingMessageThread.join(); }
+    mShowLoopError = true;
     mRunning = false;
 }
 

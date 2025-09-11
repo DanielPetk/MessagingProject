@@ -67,7 +67,7 @@ void MainInterface::OnConnectionSuccess() {
 
 void MainInterface::OnLoopError() {
     mScreen.Post([this] {
-        mNetworkController->CloseServerConnection();
+        mNetworkController->CloseServerConnection(false);
         SetAppState(3);
     });
     mScreen.RequestAnimationFrame();
@@ -82,7 +82,7 @@ void MainInterface::OnReceivedMessage(const Message& message) {
 }
 
 void MainInterface::OnLeaveRoom() {
-    mNetworkController->CloseServerConnection();
+    mNetworkController->CloseServerConnection(true);
     SetAppState(0);
 }
 

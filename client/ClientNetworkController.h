@@ -32,9 +32,10 @@ public:
     void AddInterface(std::shared_ptr<MainInterface> mainInterface);
     void StartReceiveMessageLoop();
     bool SendServerMessage(const std::string& message);
-    void CloseServerConnection();
+    void CloseServerConnection(bool suppressErrorScreen);
 
     void SetRunning(bool running) { mRunning = running; }
+    void SetShowLoopError(bool showLoopError) { mShowLoopError = showLoopError; }
     
 private:
 
@@ -45,7 +46,8 @@ private:
     std::mutex mCleanupMutex;
     std::atomic<bool> mLoopRecv = false;
     std::atomic<bool> mRunning = false;
-    
+    std::atomic<bool> mShowLoopError = true;
+
     std::jthread mConnectingThread;
     std::jthread mReceivingMessageThread;
 
