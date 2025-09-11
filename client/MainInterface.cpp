@@ -11,7 +11,11 @@
 
 using namespace ftxui;
 
-MainInterface::MainInterface(ClientNetworkController* networkController) : mConnectPage{this}, mConnectErrorPage{this}, mChatPage{this}, 
+MainInterface::MainInterface(ClientNetworkController* networkController) : 
+    mConnectPage{this},
+    mConnectErrorPage{this, "There was an error connecting to the server."}, 
+    mLoopErrorPage{this, "Server connection closed."},
+    mChatPage{this}, 
     mScreen{ScreenInteractive::Fullscreen()}, mExit{mScreen.ExitLoopClosure()}, mNetworkController{networkController} {
 }
 
@@ -19,12 +23,13 @@ void MainInterface::Run() {
     Component connectPageContent = mConnectPage.GetPageContent();
     Component connectErrorPageContent = mConnectErrorPage.GetPageContent();
     Component chatPageContent = mChatPage.GetPageContent();
-
+    Component loopErrorPageContent = mLoopErrorPage.GetPageContent();
 
     Component mainContainer = Container::Tab({
         connectPageContent,
         connectErrorPageContent,
         chatPageContent,
+        loopErrorPageContent
     }, &mAppState);
     
     auto screen_renderer = Renderer(mainContainer, [&] {
@@ -32,6 +37,7 @@ void MainInterface::Run() {
             case 0: return connectPageContent->Render(); 
             case 1: return connectErrorPageContent->Render();
             case 2: return chatPageContent->Render();
+            case 3: return loopErrorPageContent->Render();
         }
         return text("Invalid State");
     });
@@ -62,7 +68,7 @@ void MainInterface::OnConnectionSuccess() {
 void MainInterface::OnLoopError() {
     mScreen.Post([this] {
         mNetworkController->CloseServerConnection();
-        SetAppState(1);
+        SetAppState(3);
     });
     mScreen.RequestAnimationFrame();
 }

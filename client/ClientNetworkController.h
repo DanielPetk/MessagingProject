@@ -35,6 +35,7 @@ public:
     void CloseServerConnection();
 
     void SetRunning(bool running) { mRunning = running; }
+    
 private:
 
     Socket mServerSocket;

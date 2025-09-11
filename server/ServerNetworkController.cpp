@@ -42,6 +42,7 @@ std::optional<std::string> ServerNetworkController::StartListening() {
     return hostname;
 }
 
+// Ugly
 void ServerNetworkController::AcceptClients() {
     if (!mInterface || mLoopAccept) { return; }
     mLoopAccept = true;
@@ -71,9 +72,11 @@ void ServerNetworkController::AcceptClients() {
                     if (!sendRes || sendRes.value() == 0) {
                         continue;
                     }
+                    while (true) {
 
-                    std::this_thread::sleep_for(std::chrono::seconds(5));
-                    // HERE WE ADD TO THE LIST OF SOCKETS
+                        std::this_thread::sleep_for(std::chrono::seconds(2));
+                        clientSocket.Send("Test message sent from server 1234567890!@#$%^&*()");
+                    }
                 }
                 else {
                     sendRes = clientSocket.Send(handler.CreateProtocolString({{TYPE, VALIDATE}, {MESSAGE, SERVER_CONNECTION_DECLINED}}));

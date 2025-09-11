@@ -8,6 +8,6 @@ class ConnectErrorPage : public Page {
     ftxui::Component mPageContent;
 
 public:
-    ConnectErrorPage(MainInterface*);
+    ConnectErrorPage(MainInterface*, const std::string& errorMessage);
     ftxui::Component GetPageContent() override;
 };

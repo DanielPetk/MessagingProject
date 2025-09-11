@@ -4,7 +4,7 @@
 
 using namespace ftxui;
 
-ConnectErrorPage::ConnectErrorPage(MainInterface* mainInterface) : Page (mainInterface) {
+ConnectErrorPage::ConnectErrorPage(MainInterface* mainInterface, const std::string& errorMessage) : Page (mainInterface) {
 
     mOkayButton = Button("OK", [&] {
         mMainInterface->SetAppState(0);        
@@ -16,7 +16,7 @@ ConnectErrorPage::ConnectErrorPage(MainInterface* mainInterface) : Page (mainInt
                 hcenter(
                     vbox({
                         separatorEmpty(),
-                        paragraph("There was an error connecting to the server."),
+                        paragraph(errorMessage),
                         separatorEmpty(),
                         hbox({filler(), mOkayButton->Render(), filler()})
                     })

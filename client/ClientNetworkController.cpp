@@ -21,9 +21,10 @@ void ClientNetworkController::StartReceiveMessageLoop() {
             auto recvRes = mServerSocket.Recv();
             if (!recvRes || recvRes.value() == "") {
                 mInterface->OnLoopError();
+                return;
             }
 
-            mInterface->OnReceivedMessage({"PENIS", "ASS"});
+            mInterface->OnReceivedMessage({"TestUser", recvRes.value()});
         }
     });
 }
@@ -79,7 +80,14 @@ void ClientNetworkController::CloseServerConnection() {
 }
 
 bool ClientNetworkController::SendServerMessage(const std::string& message) {
-    auto sendRes = mServerSocket.Send(message);
+
+    ProtocolHandler handler;
+    std::string protocolMessage = handler.CreateProtocolString({
+        {TYPE, CHAT},
+        {MESSAGE, message}
+    });
+
+    auto sendRes = mServerSocket.Send(protocolMessage);
     return !(!sendRes || sendRes.value() == 0);
 }
 
@@ -104,6 +112,7 @@ bool ClientNetworkController::ValidateServer(const std::string& username) {
         auto parsed = handler.ParseProtocolString(recvFuture.get());
         return ((parsed.contains(TYPE)) && (parsed[TYPE] == VALIDATE) && (parsed.contains(MESSAGE)) && (parsed[MESSAGE] == SERVER_CONNECTION_ACCEPTED));
     }
+    
     mServerSocket.Close();
     recvFuture.wait();
     return false;

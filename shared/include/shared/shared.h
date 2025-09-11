@@ -12,3 +12,4 @@ inline const std::string TYPE = "type";
 inline const std::string VALIDATE = "validate";
 inline const std::string MESSAGE = "message";
 inline const std::string USERNAME = "username";
+inline const std::string CHAT = "chat";

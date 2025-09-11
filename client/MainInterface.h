@@ -12,6 +12,27 @@ class ClientNetworkController;
 
 class MainInterface {
     
+public:
+
+    MainInterface(ClientNetworkController* networkController);
+    
+    // Callbacks for different ui events that will be called from other threads
+    void OnConnectionError();
+    void OnConnectionSuccess();
+    void OnLoopError();
+    
+    // Called from UI Threads
+    void OnConnectButtonPress(const std::string& username, const std::string& host, const std::string& port);
+    void OnLeaveRoom();
+    void OnSendMessage(const std::string& message);
+    void OnReceivedMessage(const Message& message);
+
+    void Run();
+    void Exit() { mExit(); };
+    void SetAppState(int appState) { mAppState = appState; };
+    
+private:
+
     /// The network controller used to call functions on
     ClientNetworkController* mNetworkController = nullptr;
 
@@ -27,23 +48,6 @@ class MainInterface {
     // UI Pages
     ConnectPage mConnectPage;
     ConnectErrorPage mConnectErrorPage;
+    ConnectErrorPage mLoopErrorPage;
     ChatPage mChatPage;
-
-public:
-    MainInterface(ClientNetworkController* networkController);
-   
-    // Callbacks for different ui events that will be called from other threads
-    void OnConnectionError();
-    void OnConnectionSuccess();
-    void OnLoopError();
-
-    // Called from UI Threads
-    void OnConnectButtonPress(const std::string& username, const std::string& host, const std::string& port);
-    void OnLeaveRoom();
-    void OnSendMessage(const std::string& message);
-    void OnReceivedMessage(const Message& message);
-
-    void Run();
-    void Exit() { mExit(); };
-    void SetAppState(int appState) { mAppState = appState; };
 };
