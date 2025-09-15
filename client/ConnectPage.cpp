@@ -16,7 +16,8 @@ ConnectPage::ConnectPage(MainInterface* mainInterface) : Page{mainInterface}, mC
     mUsernameField = Input(&mUsernameFieldContent);
     mUsernameField |= CatchEvent([&](Event event) {
         if (event.is_character()) {
-            if (event.character()[0] == ' ') {return true;}
+            char c = event.character()[0];
+            if (c == ' ' || !(isalnum(c) || c == '_')) {return true;}
             if (mUsernameFieldContent.size() >= 16) {return true;}
         }
         return event == Event::Return; // Prevent newline

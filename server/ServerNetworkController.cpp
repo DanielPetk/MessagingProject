@@ -72,11 +72,15 @@ void ServerNetworkController::AcceptClients() {
                     if (!sendRes || sendRes.value() == 0) {
                         continue;
                     }
-                    while (true) {
 
-                        std::this_thread::sleep_for(std::chrono::seconds(2));
-                        clientSocket.Send("Test message sent from server 1234567890!@#$%^&*()");
+                    // Add to clients list here
+                    {
+                        std::lock_guard<std::mutex> a{mClientMutex};
+                        mClients.emplace_back(clientSocket, parsed[USERNAME]);
+                        mInterface->OnClientJoined(parsed[USERNAME]);
                     }
+
+
                 }
                 else {
                     sendRes = clientSocket.Send(handler.CreateProtocolString({{TYPE, VALIDATE}, {MESSAGE, SERVER_CONNECTION_DECLINED}}));
@@ -90,3 +94,17 @@ void ServerNetworkController::AcceptClients() {
         }
     }};
 }
+
+void Client::CloseConnection() {
+    mRunning = false;
+    mClientSocket.Close();
+    if (mClientThread.joinable()) {
+        mClientThread.join();
+    }
+}
+
+
+Client::Client(Socket& socket, const std::string& username) : mClientSocket{std::move(socket)}, mUsername{username} {
+
+}
+

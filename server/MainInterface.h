@@ -45,6 +45,9 @@ public:
     // Called from UI thread
     void OnCommandEnter(const std::string& command);
 
+    // Called from other threads
+    void OnClientJoined(const std::string& username);
+
     MainInterface(ServerNetworkController* networkController);
     void Run();
     void Exit() { mExit(); };

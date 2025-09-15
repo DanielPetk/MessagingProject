@@ -106,6 +106,13 @@ void MainInterface::OnSetPortCommand(const std::string& command) {
 
 }
 
+void MainInterface::OnClientJoined(const std::string& username) {
+    mScreen.Post([this, username] {
+        mLogPage.AddLogToList({LogType::Info, std::format("User '{}' has joined.", username)});
+    });
+    mScreen.RequestAnimationFrame();
+}
+
 std::vector<std::string> MainInterface::ParseCommandArguments(const std::string& command) {
     std::istringstream ss{command};
     std::vector<std::string> commands;

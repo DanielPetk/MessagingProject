@@ -95,7 +95,7 @@ void MainInterface::OnConnectButtonPress(const std::string& username, const std:
 void MainInterface::OnSendMessage(const std::string& message) { 
     bool sendSuccess = mNetworkController->SendServerMessage(message);
     if (sendSuccess) {
-        mChatPage.AddMessageToList({"You", message, MessageType::Sent});
+        mChatPage.AddMessageToList({mNetworkController->GetUsername(), message, MessageType::Sent});
     }
     else {
         mChatPage.AddMessageToList({"ERROR", "Failed to send message", MessageType::Error});

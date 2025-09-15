@@ -77,8 +77,8 @@ void ClientNetworkController::CloseServerConnection(bool suppressErrors) {
         mShowLoopError = false;
     }
     std::lock_guard<std::mutex> m{mCleanupMutex};
-    mServerSocket.Close();
     mLoopRecv = false;
+    mServerSocket.Close();
     if (mConnectingThread.joinable()) { mConnectingThread.join(); }
     if (mReceivingMessageThread.joinable()) {mReceivingMessageThread.join(); }
     mShowLoopError = true;

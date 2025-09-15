@@ -36,6 +36,7 @@ public:
 
     void SetRunning(bool running) { mRunning = running; }
     void SetShowLoopError(bool showLoopError) { mShowLoopError = showLoopError; }
+    std::string GetUsername() { return mUsername; }
     
 private:
 
