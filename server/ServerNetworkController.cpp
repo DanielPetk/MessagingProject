@@ -28,15 +28,13 @@ std::optional<std::string> ServerNetworkController::StartListening() {
 
     if (!mServerSocket.Bind(reinterpret_cast<sockaddr*>(&addr), sizeof(addr))) {
         return std::nullopt;
+        mRunning = false;
     }
 
     if (!mServerSocket.Listen(SOMAXCONN)) {
         return std::nullopt;
+        mRunning = false;
     }
-
-    
-    sockaddr_in clientSockAddr;
-    socklen_t clientSockAddrSize = sizeof(clientSockAddr);
 
     AcceptClients();
     return hostname;
@@ -93,6 +91,18 @@ void ServerNetworkController::AcceptClients() {
             }
         }
     }};
+}
+
+void ServerNetworkController::StopServer() {
+    std::lock_guard<std::mutex> b{mCleanupMutex};
+    mLoopAccept = false;
+    mServerSocket.Close();
+    if (mAcceptThread.joinable()) { mAcceptThread.join(); }
+    {
+        std::lock_guard<std::mutex> a{mClientMutex};
+        mClients.clear();
+    }
+    mRunning = false;
 }
 
 void Client::CloseConnection() {

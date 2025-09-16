@@ -57,7 +57,10 @@ std::expected<void, int> Socket::Close() {
     if (IsValid() && closesocket(mSocket) == SOCKET_ERROR) {
         return std::unexpected{GetLastError()};
     } 
-    mSocket = INVALID_SOCKET;
+    {
+        std::lock_guard<std::mutex> m{mCloseMutex};
+        mSocket = INVALID_SOCKET;
+    }
     return {};
 }
 

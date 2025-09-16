@@ -31,8 +31,13 @@ class ServerNetworkController {
 
 public:
 
+    ~ServerNetworkController() { StopServer(); }
+
     void AddInterface(std::shared_ptr<MainInterface> mainInterface) {mInterface = mainInterface;}
+    
     std::optional<std::string> StartListening();
+    void StopServer();
+
     void SetPort(int port) { mPort = port; } 
     int GetPort() { return mPort; }
     bool GetRunning() { return mRunning; }
@@ -43,6 +48,7 @@ private:
     std::atomic<bool> mLoopAccept = false;
     std::atomic<int> mPort = 54321;
     std::mutex mClientMutex;
+    std::mutex mCleanupMutex;
 
     Socket mServerSocket;
     std::shared_ptr<MainInterface> mInterface = nullptr;

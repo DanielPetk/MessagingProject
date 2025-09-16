@@ -1,6 +1,7 @@
 #pragma once
 
 #include <atomic>
+#include <mutex>
 #include <optional>
 #include <string>
 #include <expected>
@@ -39,5 +40,6 @@ public:
 private:
     
     SOCKET mSocket = INVALID_SOCKET;
+    std::mutex mCloseMutex;
     int GetLastError();
 };
