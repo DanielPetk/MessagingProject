@@ -3,7 +3,7 @@
 #include <iostream>
 #include <sstream>
 
-std::string ProtocolHandler::CreateProtocolString(const std::unordered_map<std::string, std::string>& map) {
+std::string ProtocolHandler::CreateProtocolString(const std::unordered_map<std::string, std::string>& map) const {
     std::ostringstream oss;
     for (const auto& [key, value] : map) {
         oss << key << VALUE_SEPARATOR << value << DELIM;
@@ -13,7 +13,7 @@ std::string ProtocolHandler::CreateProtocolString(const std::unordered_map<std::
     return oss.str();
 }
 
-std::unordered_map<std::string, std::string> ProtocolHandler::ParseProtocolString(const std::string& message) {
+std::unordered_map<std::string, std::string> ProtocolHandler::ParseProtocolString(const std::string& message) const {
     size_t pos = message.find(ENDM);
     if (pos == std::string::npos) {
         return {};

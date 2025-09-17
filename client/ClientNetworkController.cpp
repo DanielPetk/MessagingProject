@@ -26,7 +26,11 @@ void ClientNetworkController::StartReceiveMessageLoop() {
                 return;
             }
 
-            mInterface->OnReceivedMessage({"TestUser", recvRes.value()});
+            auto parsed = handler.ParseProtocolString(recvRes.value());
+            if ((parsed.contains(TYPE)) && (parsed[TYPE] == CHAT) && (parsed.contains(MESSAGE)) && (parsed.contains(USERNAME))) {
+
+            }
+            mInterface->OnReceivedMessage({parsed[USERNAME], parsed[MESSAGE]});
         }
     });
 }
@@ -90,7 +94,8 @@ bool ClientNetworkController::SendServerMessage(const std::string& message) {
     ProtocolHandler handler;
     std::string protocolMessage = handler.CreateProtocolString({
         {TYPE, CHAT},
-        {MESSAGE, message}
+        {MESSAGE, message},
+        {USERNAME, mUsername}
     });
 
     auto sendRes = mServerSocket.Send(protocolMessage);
