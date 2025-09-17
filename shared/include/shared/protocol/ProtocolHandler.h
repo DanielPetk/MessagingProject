@@ -6,6 +6,6 @@
 class ProtocolHandler {
 
 public:
-    std::string CreateProtocolString(const std::unordered_map<std::string, std::string>& map);
-    std::unordered_map<std::string, std::string> ParseProtocolString(const std::string& message);
+    std::string const CreateProtocolString(const std::unordered_map<std::string, std::string>& map);
+    std::unordered_map<std::string, std::string> const ParseProtocolString(const std::string& message);
 };

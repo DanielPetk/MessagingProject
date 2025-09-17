@@ -1,5 +1,6 @@
 #include "ServerNetworkController.h"
 
+#include <algorithm>
 #include <future>
 #include <iostream>
 
@@ -74,7 +75,7 @@ void ServerNetworkController::AcceptClients() {
                     // Add to clients list here
                     {
                         std::lock_guard<std::mutex> a{mClientMutex};
-                        mClients.emplace_back(clientSocket, parsed[USERNAME]);
+                        mClients.emplace_back(std::make_unique<Client>(clientSocket, parsed[USERNAME], this));
                         mInterface->OnClientJoined(parsed[USERNAME]);
                     }
 
@@ -95,6 +96,7 @@ void ServerNetworkController::AcceptClients() {
 
 void ServerNetworkController::StopServer() {
     std::lock_guard<std::mutex> b{mCleanupMutex};
+    mShuttingDown = true;
     mLoopAccept = false;
     mServerSocket.Close();
     if (mAcceptThread.joinable()) { mAcceptThread.join(); }
@@ -103,6 +105,7 @@ void ServerNetworkController::StopServer() {
         mClients.clear();
     }
     mRunning = false;
+    mShuttingDown = false;
 }
 
 void Client::CloseConnection() {
@@ -113,8 +116,47 @@ void Client::CloseConnection() {
     }
 }
 
+void Client::SendMessageToThisClient(const std::string& message) {
+    mClientSocket.Send(message);
+}
 
-Client::Client(Socket& socket, const std::string& username) : mClientSocket{std::move(socket)}, mUsername{username} {
+void Client::SendMessageToOtherClients(const std::string& message) {
+    auto& clientVector = mNetwork->GetClients();
 
+    std::for_each(clientVector.begin(), clientVector.end(), [&](std::unique_ptr<Client>& client) {
+        if (client.get() != this) {
+            client->SendMessageToThisClient(message);
+        }
+    });
+}
+
+Client::Client(Socket& socket, const std::string& username, ServerNetworkController* network) 
+            : mClientSocket{std::move(socket)}, mUsername{username}, mNetwork{network} 
+{
+    mClientThread = std::jthread{[this] {
+        while (mRunning) {
+            auto recvRes = mClientSocket.Recv();
+            if (!recvRes || recvRes.value() == "") {
+                break;
+            }
+
+            std::string message = recvRes.value();
+            std::unique_lock<std::mutex> ul{mNetwork->GetClientsMutex(), std::try_to_lock};
+            if (ul.owns_lock()) {
+                SendMessageToOtherClients(message);
+                continue;
+            }
+
+            if (mNetwork->GetShuttingDown()){
+                break;
+            }
+
+            std::lock_guard<std::mutex> lg{mNetwork->GetClientsMutex()};
+            SendMessageToOtherClients(message);
+        }
+
+        mClientSocket.Close();
+        mRunning = false;
+    }};
 }
 
