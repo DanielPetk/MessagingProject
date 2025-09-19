@@ -27,6 +27,8 @@ void MainInterface::OnCommandEnter(const std::string& command) {
         OnSetPortCommand(command);
     } else if (commandBase == "start") {
         OnStartCommand();
+    } else if (commandBase == "stop") {
+        OnStopCommand();
     } else {
         mLogPage.AddLogToList({LogType::Error, INVALID_COMMAND});
     }
@@ -58,6 +60,11 @@ void MainInterface::OnStartCommand() {
         mLogPage.AddLogToList({LogType::Error, "Failed to start server."});
     }
 }
+
+void MainInterface::OnStopCommand() {
+    mNetworkController->StopServer();
+    mLogPage.AddLogToList({LogType::Alert, "Server stopped."});
+};
 
 void MainInterface::OnExitCommand() {
     mLogPage.AddLogToList({LogType::Alert, "Exiting."});

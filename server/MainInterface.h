@@ -39,6 +39,7 @@ class MainInterface {
     void OnClearCommand();
     void OnSetPortCommand(const std::string& command);
     void OnStartCommand();
+    void OnStopCommand();
 
 public:
 
