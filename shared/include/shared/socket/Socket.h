@@ -1,14 +1,18 @@
 #pragma once
 
-#define NOMINMAX
+#ifdef _WIN32
+    #ifndef NOMINMAX
+    #define NOMINMAX
+    #endif
+    #include <winsock2.h>
+    #include <ws2tcpip.h> 
+#endif
 
 #include <atomic>
 #include <mutex>
 #include <optional>
 #include <string>
 #include <expected>
-#include <winsock2.h>
-#include <ws2tcpip.h>
 
 class Socket {
 

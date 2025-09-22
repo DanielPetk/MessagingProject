@@ -1,15 +1,12 @@
-#include <iostream>
-
 #ifdef _WIN32
     #ifndef NOMINMAX
-        #define NOMINMAX
+    #define NOMINMAX
     #endif
     #include <winsock2.h>
     #include <ws2tcpip.h> 
-#else
-    #include <array>
 #endif
 
+#include <iostream>
 #include "ClientApp.h"
 
 int main() {
@@ -29,4 +26,5 @@ int main() {
 #ifdef _WIN32
     WSACleanup();
 #endif
+
 }
