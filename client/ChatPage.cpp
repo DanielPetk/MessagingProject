@@ -1,6 +1,8 @@
 #include <format>
 #include <ranges>
 #include <iostream>
+#include <cctype>
+#include <cwctype>
 #include <shared/shared.h>
 
 #include "ChatPage.h"

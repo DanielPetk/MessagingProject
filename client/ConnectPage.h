@@ -3,7 +3,6 @@
 #include <atomic>
 #include <future>
 #include <string>
-#include <winsock2.h>
 
 #include <shared/Page.h>
 

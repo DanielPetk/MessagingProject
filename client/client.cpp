@@ -1,6 +1,9 @@
 #include <iostream>
 
-#if defined(_WIN32)
+#ifdef _WIN32
+    #ifndef NOMINMAX
+        #define NOMINMAX
+    #endif
     #include <winsock2.h>
     #include <ws2tcpip.h> 
 #else
@@ -11,7 +14,7 @@
 
 int main() {
 
-#if defined(_WIN32)
+#ifdef _WIN32
     WSADATA wsaData;
     int result = WSAStartup(MAKEWORD(2,2), &wsaData);
     if (result != 0){
@@ -23,7 +26,7 @@ int main() {
     ClientApp clientApp;
     clientApp.Run();
 
-#if defined(_WIN32)
+#ifdef _WIN32
     WSACleanup();
 #endif
 }
