@@ -3,6 +3,8 @@
 #include "shared/socket/Socket.h"
 #include "shared/shared.h"
 
+constexpr int HOST_BUFFER_SIZE = 1024;
+
 Socket::Socket(SOCKET socket) {
     if (socket == INVALID_SOCKET) {
         throw std::runtime_error("Socket failed to create.");      
@@ -17,8 +19,10 @@ Socket::Socket(SOCKET socket) {
     mSocket = socket;
 }
 
-Socket::Socket(int af, int type, int protocol) {
-    mSocket = ::socket(af, type, protocol);
+// Only really have one option so the argument is a bit useless
+// I just use it to differentiate from default constructor
+Socket::Socket(SocketMode mode) {
+    mSocket = ::socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (mSocket == INVALID_SOCKET){
         throw std::runtime_error("Socket failed to create.");
     }
@@ -64,8 +68,18 @@ std::expected<void, int> Socket::Close() {
     return {};
 }
 
-std::expected<void, int> Socket::Connect(const struct sockaddr* addr, socklen_t addrlen) {
-    if (connect(mSocket, addr, addrlen) == SOCKET_ERROR){
+std::expected<void, int> Socket::Connect(const std::string& host, const std::string& port) {
+    struct sockaddr_in server_addr;
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_port = htons(std::stoi(port));
+        
+    hostent* he = gethostbyname(host.c_str());
+    if (!he) {
+        std::unexpected{GetLastError()};
+    }
+    memcpy(&server_addr.sin_addr, he->h_addr, he->h_length);
+
+    if (connect(mSocket, reinterpret_cast<sockaddr*>(&server_addr), sizeof(server_addr)) == SOCKET_ERROR){
         return std::unexpected{GetLastError()};
     }    
     return {};
@@ -116,4 +130,12 @@ std::expected<void, int> Socket::Shutdown(int how) {
         return std::unexpected{GetLastError()};
     }    
     return {};
+}
+
+std::expected<std::string, int> Socket::GetHostnameHelper() {
+    std::string hostname(HOST_BUFFER_SIZE, '\0');
+    if (gethostname(hostname.data(), HOST_BUFFER_SIZE - 1) == SOCKET_ERROR) {
+        return std::unexpected{GetLastError()};
+    }
+    return hostname;
 }

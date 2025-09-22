@@ -8,18 +8,20 @@
 #include <shared/shared.h>
 #include "MainInterface.h"
 
-constexpr int HOST_BUFFER_SIZE = 1024;
-
 std::optional<std::string> ServerNetworkController::StartListening() {
     if (mRunning) {
         return std::nullopt;
     }
     mRunning = true;
-    mServerSocket = Socket{AF_INET, SOCK_STREAM, IPPROTO_TCP};
+    mServerSocket = Socket{SocketMode::TCP};
   
     // get hostname
-    std::string hostname(HOST_BUFFER_SIZE, '\0');
-    gethostname(hostname.data(), HOST_BUFFER_SIZE - 1);
+    auto hostnameres = mServerSocket.GetHostnameHelper();
+    if (!hostnameres) {
+        mRunning = false;
+        return std::nullopt;
+    }
+    std::string hostname = hostnameres.value();
 
     // Set up socket server information
     sockaddr_in addr{};
@@ -28,13 +30,13 @@ std::optional<std::string> ServerNetworkController::StartListening() {
     addr.sin_port = htons(mPort); 
 
     if (!mServerSocket.Bind(reinterpret_cast<sockaddr*>(&addr), sizeof(addr))) {
-        return std::nullopt;
         mRunning = false;
+        return std::nullopt;
     }
 
-    if (!mServerSocket.Listen(SOMAXCONN)) {
-        return std::nullopt;
+    if (!mServerSocket.Listen()) {
         mRunning = false;
+        return std::nullopt;
     }
 
     AcceptClients();
