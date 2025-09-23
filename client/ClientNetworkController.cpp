@@ -50,8 +50,17 @@ void ClientNetworkController::ConnectToServer(const std::string& username, const
             return;
         }
         
+        int portnum;
+        try {
+            portnum = std::stoi(port);
+        } catch (...) {
+            mServerSocket.Close();
+            mInterface->OnConnectionError();
+            return;
+        }
+
         // Connect to server 
-        if (!mServerSocket.Connect(host, port)) {
+        if (!mServerSocket.Connect(host, portnum)) {
             mServerSocket.Close();
             mInterface->OnConnectionError();
             return;

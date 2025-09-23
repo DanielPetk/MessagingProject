@@ -23,13 +23,7 @@ std::optional<std::string> ServerNetworkController::StartListening() {
     }
     std::string hostname = hostnameres.value();
 
-    // Set up socket server information
-    sockaddr_in addr{};
-    addr.sin_family = AF_INET;
-    addr.sin_addr.s_addr = INADDR_ANY;  
-    addr.sin_port = htons(mPort); 
-
-    if (!mServerSocket.Bind(reinterpret_cast<sockaddr*>(&addr), sizeof(addr))) {
+    if (!mServerSocket.Bind(mPort)) {
         mRunning = false;
         return std::nullopt;
     }
@@ -48,13 +42,11 @@ void ServerNetworkController::AcceptClients() {
     if (!mInterface || mLoopAccept) { return; }
     mLoopAccept = true;
     mAcceptThread = std::jthread{[&] {
-        
-        sockaddr_in clientSockAddr;
-        socklen_t clientSockAddrSize = sizeof(clientSockAddr);
+
         ProtocolHandler handler;
 
         while (mLoopAccept) {
-            auto clientOpt = mServerSocket.Accept(reinterpret_cast<sockaddr*>(&clientSockAddr), &clientSockAddrSize);
+            auto clientOpt = mServerSocket.Accept();
             if (!clientOpt) {continue;}
 
             Socket clientSocket = std::move(clientOpt.value());
