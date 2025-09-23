@@ -12,7 +12,7 @@ Socket::Socket(socket_t socket) {
     }
 
     int optVal = 0;
-    int optLen = sizeof(optVal);
+    socklen_t optLen = sizeof(optVal);
     if (getsockopt(socket, SOL_SOCKET, SO_TYPE, reinterpret_cast<char*>(&optVal), &optLen) == SOCKET_ERROR_CODE) {
         throw std::runtime_error("Socket failed to create.");
     }
