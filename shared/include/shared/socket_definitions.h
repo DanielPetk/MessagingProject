@@ -55,6 +55,6 @@ inline int getlasterror() {
 #ifdef _WIN32
     return WSAGetLastError();
 #else
-    return std::errno;    
+    return errno;    
 #endif
 }
