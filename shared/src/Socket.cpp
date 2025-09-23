@@ -47,20 +47,16 @@ Socket::~Socket() {
     Close();
 }
 
-int Socket::GetLastError() {
-    return WSAGetLastError();
-}
-
 std::expected<void, int> Socket::SetSendTimeout(int timeout) {
     if (setsockopt(mSocket, SOL_SOCKET, SO_SNDTIMEO, reinterpret_cast<const char*>(&timeout), sizeof(timeout)) == SOCKET_ERROR_CODE) {
-        return std::unexpected{GetLastError()};
+        return std::unexpected{getlasterror()};
     }
     return {};
 }
 
 std::expected<void, int> Socket::Close() {
-    if (IsValid() && closesocket(mSocket) == SOCKET_ERROR_CODE) {
-        return std::unexpected{GetLastError()};
+    if (IsValid() && socket_close(mSocket) == SOCKET_ERROR_CODE) {
+        return std::unexpected{getlasterror()};
     } 
     {
         std::lock_guard<std::mutex> m{mCloseMutex};
@@ -76,12 +72,12 @@ std::expected<void, int> Socket::Connect(const std::string& host, int port) {
         
     hostent* he = gethostbyname(host.c_str());
     if (!he) {
-        return std::unexpected{GetLastError()};
+        return std::unexpected{getlasterror()};
     }
     std::memcpy(&server_addr.sin_addr, he->h_addr, he->h_length);
 
     if (connect(mSocket, reinterpret_cast<sockaddr*>(&server_addr), sizeof(server_addr)) == SOCKET_ERROR_CODE){
-        return std::unexpected{GetLastError()};
+        return std::unexpected{getlasterror()};
     }    
     return {};
 }
@@ -93,7 +89,7 @@ std::expected<void, int> Socket::Bind(int port) {
     addr.sin_port = htons(port); 
 
     if (bind(mSocket, reinterpret_cast<sockaddr*>(&addr), sizeof(addr)) == SOCKET_ERROR_CODE) {
-        return std::unexpected{GetLastError()};
+        return std::unexpected{getlasterror()};
     }
 
     return {};
@@ -101,7 +97,7 @@ std::expected<void, int> Socket::Bind(int port) {
 
 std::expected<void, int> Socket::Listen(int backlog) {
     if (listen(mSocket, backlog) == SOCKET_ERROR_CODE) {
-        return std::unexpected{GetLastError()};
+        return std::unexpected{getlasterror()};
     }
     return {};
 }
@@ -115,7 +111,7 @@ std::expected<Socket, int> Socket::Accept() {
     if (otherSocket != INVALID_SOCKET_FD){
         return Socket{otherSocket};
     }
-    return std::unexpected{GetLastError()};
+    return std::unexpected{getlasterror()};
 }
 
 std::expected<std::string, int> Socket::Recv(int flags) {
@@ -125,7 +121,7 @@ std::expected<std::string, int> Socket::Recv(int flags) {
     if (bytesRecieved >= 0) {
         return std::string(buffer, bytesRecieved);
     }
-    return std::unexpected{GetLastError()};
+    return std::unexpected{getlasterror()};
 }
 
 std::expected<int, int> Socket::Send(std::string_view message, int flags) {
@@ -133,12 +129,12 @@ std::expected<int, int> Socket::Send(std::string_view message, int flags) {
     if (bytesSent >= 0) {
         return bytesSent;
     }
-    return std::unexpected{GetLastError()};
+    return std::unexpected{getlasterror()};
 }
 
 std::expected<void, int> Socket::Shutdown(int how) {
     if (shutdown(mSocket, how) == SOCKET_ERROR_CODE){
-        return std::unexpected{GetLastError()};
+        return std::unexpected{getlasterror()};
     }    
     return {};
 }
@@ -146,7 +142,7 @@ std::expected<void, int> Socket::Shutdown(int how) {
 std::expected<std::string, int> Socket::GetHostnameHelper() {
     std::string hostname(HOST_BUFFER_SIZE, '\0');
     if (gethostname(hostname.data(), HOST_BUFFER_SIZE - 1) == SOCKET_ERROR_CODE) {
-        return std::unexpected{GetLastError()};
+        return std::unexpected{getlasterror()};
     }
     return hostname;
 }

@@ -1,27 +1,6 @@
 #pragma once
 
-// Here we define all of the OS differences
-#ifdef _WIN32
-    #ifndef NOMINMAX
-    #define NOMINMAX
-    #endif
-    #include <winsock2.h>
-    #include <ws2tcpip.h> 
-
-    using socket_t = SOCKET;
-    constexpr socket_t INVALID_SOCKET_FD = INVALID_SOCKET;
-    constexpr int SOCKET_ERROR_CODE = SOCKET_ERROR;
-    constexpr int SHUTDOWN_BOTH = SD_BOTH;
-#else
-    #include <netdb.h>
-    #include <unistd.h>
-    #include <arpa/inet.h>
-
-    using socket_t = int;
-    constexpr socket_t INVALID_SOCKET_FD = -1;
-    constexpr int SOCKET_ERROR_CODE = -1;
-    constexpr int SHUTDOWN_BOTH = SHUT_RDWR;
-#endif
+#include <shared/socket_definitions.h>
 
 #include <atomic>
 #include <mutex>
@@ -71,5 +50,4 @@ public:
     explicit Socket(socket_t socket);
     socket_t mSocket = INVALID_SOCKET_FD;
     std::mutex mCloseMutex;
-    int GetLastError();
 };
