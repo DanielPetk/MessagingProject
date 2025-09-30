@@ -48,9 +48,18 @@ Socket::~Socket() {
 }
 
 std::expected<void, int> Socket::SetSendTimeout(int timeout) {
+#ifdef _WIN32
     if (setsockopt(mSocket, SOL_SOCKET, SO_SNDTIMEO, reinterpret_cast<const char*>(&timeout), sizeof(timeout)) == SOCKET_ERROR_CODE) {
         return std::unexpected{getlasterror()};
     }
+#else
+    struct timeval tv;
+    tv.tv_sec = timeoutMs / 1000;
+    tv.tv_usec = (timeoutMs % 1000) * 1000;
+    if (setsockopt(mSocket, SOL_SOCKET, SO_SNDTIMEO, &tv, sizeof(tv)) == SOCKET_ERROR_CODE) {
+        return std::unexpected{getlasterror()};
+    }
+#endif
     return {};
 }
 
