@@ -64,13 +64,11 @@ std::expected<void, int> Socket::SetSendTimeout(int timeout) {
 }
 
 std::expected<void, int> Socket::Close() {
-    if (IsValid() && socket_close(mSocket) == SOCKET_ERROR_CODE) {
+    std::lock_guard<std::mutex> m{mCloseMutex};
+    if (IsValid() && (!Shutdown() || socket_close(mSocket) == SOCKET_ERROR_CODE)) {
         return std::unexpected{getlasterror()};
     } 
-    {
-        std::lock_guard<std::mutex> m{mCloseMutex};
-        mSocket = INVALID_SOCKET_FD;
-    }
+    mSocket = INVALID_SOCKET_FD;
     return {};
 }
 
