@@ -46,7 +46,7 @@ git clone https://github.com/DanielPetk/terminal-chat
 cd terminal-chat
 mkdir build
 cd build
-cmake .. -G "{generator}"}
+cmake .. -G "{generator}"
 ```
 Replace `{generator}` with the generator you want, or omit it and the `-G` for CMake to automatically decide. Note that I've only tested the "Unix Makefiles", "MinGW Makefiles", and "Visual Studio 17 2022". CMake should now download FTXUI and set up for compilation. Now, while still in the `build` directory, run
 ```bash

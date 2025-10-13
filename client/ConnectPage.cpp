@@ -50,10 +50,6 @@ ConnectPage::ConnectPage(MainInterface* mainInterface) : Page{mainInterface}, mC
         mMainInterface->OnConnectButtonPress(mUsernameFieldContent, mHostnameFieldContent, mPortFieldContent);
     });
 
-    testbutton = Button("Test Chat Page", [&] {
-        mMainInterface->OnConnectionSuccess();
-    });
-
     mExitButton = Button("Close", [&] {
         mMainInterface->Exit();
     });
@@ -64,7 +60,6 @@ ConnectPage::ConnectPage(MainInterface* mainInterface) : Page{mainInterface}, mC
         mPortField,
         mConnectButton,
         mExitButton,
-        testbutton
     });
     
     mPageContent = Renderer(mInputContainer, [&] {
@@ -83,7 +78,6 @@ ConnectPage::ConnectPage(MainInterface* mainInterface) : Page{mainInterface}, mC
                                 vbox({
                                     hbox({filler(), mConnectButton->Render(), filler()}),
                                     hbox({filler(), mExitButton->Render(), filler()}),
-                                    hbox({filler(), testbutton->Render(), filler()})
                                 }) | center,
                             }) | size(WIDTH, EQUAL, 40),
                             filler() | size(WIDTH, EQUAL, 1)

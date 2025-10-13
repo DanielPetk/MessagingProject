@@ -25,8 +25,6 @@ class ConnectPage : public Page {
     ftxui::Component mExitButton;
     ftxui::Component mInputContainer;
     ftxui::Component mPageContent;
-
-    ftxui::Component testbutton;
     
 public:
 
