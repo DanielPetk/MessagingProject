@@ -2,6 +2,8 @@
 
 Server and client of a cross-platform terminal-based group chat application.
 
+![Image demonstrating client and server](/assets/demo.png)
+
 ## Features
 
 - Chat server that allows clients to connect and transfers messages between them, with logging and configuration options
