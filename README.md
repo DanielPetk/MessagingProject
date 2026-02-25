@@ -44,7 +44,7 @@ Since this is a personal project created mainly for learning purposes, it is rou
 Follow the instructions to clone and build the server and client executables
 
 ```bash
-git clone https://github.com/DanielPetk/terminal-chat
+git clone https://github.com/danpetk/terminal-chat
 cd terminal-chat
 mkdir build
 cd build
@@ -57,5 +57,6 @@ cmake --build .
 to start compilation. When completed, two executables should be generated. The server executable will be in `terminal-chat/build/server/` with the name `server` and same for the client.
 
 # Basic usage
+
 
 Run the `server` executable. You will be presented with a welcome screen and an input field. Type `start` to start the server on port `54321`. Now run the `client` executable (or multiple of them!). You will be presented with a connect screen. Input a username, the host of the server, and the port the server is listening on and connect. You should be brought into the chatroom where you can send messages with the "Send Message" button or with the enter key.
