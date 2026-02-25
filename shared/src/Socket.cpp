@@ -65,9 +65,15 @@ std::expected<void, int> Socket::SetSendTimeout(int timeout) {
 
 std::expected<void, int> Socket::Close() {
     std::lock_guard<std::mutex> m{mCloseMutex};
-    if (IsValid() && (!Shutdown() || socket_close(mSocket) == SOCKET_ERROR_CODE)) {
-        return std::unexpected{getlasterror()};
-    } 
+
+    if (IsValid()) {
+        Shutdown();
+        
+        if (socket_close(mSocket) == SOCKET_ERROR_CODE) {
+            return std::unexpected{getlasterror()};
+        }
+    }
+
     mSocket = INVALID_SOCKET_FD;
     return {};
 }
