@@ -29,7 +29,7 @@ Since this is a personal project created mainly for learning purposes, it is rou
 
 - TCP is a stream protocol, however I treat every call of `recv` as an individual message for simplicity. This works well enough since a message is normally handled before the next message comes in, but this could techincally cause problems.
 
-- Since I was learning as I was writing, some of the code may not follow best practices (like the socket programming and usage of the FTXUI library).
+- Since I was learning as I was writing, some of the code may seem a bit improvised and may not follow best practices (like the socket programming, multithreading, and usage of the FTXUI library). 
 
 - I have only tested on 64-bit Windows 10 and Ubuntu 24, but other systems *should* work if they support the same libraries.
 
@@ -60,5 +60,6 @@ to start compilation. When completed, two executables should be generated. The s
 
 
 Run the `server` executable. You will be presented with a welcome screen and an input field. Type `start` to start the server on port `54321`. Now run the `client` executable (or multiple of them!). You will be presented with a connect screen. Input a username, the host of the server, and the port the server is listening on and connect. You should be brought into the chatroom where you can send messages with the "Send Message" button or with the enter key.
+
 
 
