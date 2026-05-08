@@ -14,7 +14,7 @@ Server and client of a cross-platform terminal-based group chat application.
 
 - Cross-platform* (read **Disclaimers** section)
 
-- One dependancy
+- One dependency
 
 ## About
 
